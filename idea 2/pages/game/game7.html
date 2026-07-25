@@ -54,15 +54,11 @@
 								</div>
 							</section>
 
-							<section>
-
-							</section>
-
-							<!-- <section class="timerBar">
+							<section class="timerBar">
 								<div class="timerLineBart">
 
 								</div>
-							</section> -->
+							</section>
 
 							<section class="numpadContainer">
 								<div class="numpadWrapper">
@@ -80,7 +76,7 @@
 										style="width: 100%; height: 100%;">DEL</button>
 									<button class="soft-box btnContinue"
 										style="width: 100%; height: 100%;">NEXT</button>
-									<button class="soft-box btnCheck hidden "
+									<button class="soft-box btnCheck hidden"
 										style="width: 100%; height: 100%;">CHECK</button>
 								</div>
 							</section>
@@ -95,9 +91,6 @@
 		</main>
 	</div>
 	<script type="module">
-		// =====================================
-		// GENERATE SOALAN
-		// =====================================
 
 		function generateSoalanKombinasi() {
 			const questions = [];
@@ -120,7 +113,8 @@
 						},
 
 						answer: nombor1 + nombor2,
-						maxDigits: 2
+						maxDigits: 2,
+						timeLimit: 15
 					});
 				}
 			}
@@ -136,150 +130,91 @@
 					Math.random() * (i + 1)
 				);
 
-				[
-					result[i],
-					result[randomIndex]
-				] = [
-						result[randomIndex],
-						result[i]
-					];
+				[result[i], result[randomIndex]] = [result[randomIndex], result[i]];
 			}
 
 			return result;
 		}
 
-		// =====================================
-		// SOALAN TANPA HAD
-		// =====================================
-
-		let questionQueue = [];
-
-		function getNextQuestion() {
-			if (questionQueue.length === 0) {
-				questionQueue = shuffle(
-					generateSoalanKombinasi()
-				);
-			}
-
-			return questionQueue.shift();
+		function createQuizQuestions() {
+			const semuaSoalan = generateSoalanKombinasi();
+			return shuffle(semuaSoalan).slice(0, 10);
 		}
 
-		// =====================================
-		// STATE
-		// =====================================
+		let json = createQuizQuestions();
 
 		const state = {
+			index: 0,
 			currentData: null,
 
 			inputValue: "",
 			pickedNumber: null,
 
-			questionNumber: 0,
-			answeredCount: 0,
 			score: 0,
+			phase: "answering",
 
-			phase: "answering"
+			timerId: null
 		};
-
-		// =====================================
-		// UI
-		// =====================================
 
 		const ui = {
-			dialog:
-				document.querySelector(".dialog p"),
-
-			lineEquation:
-				document.querySelector(".lineEqn"),
-
-			numpads:
-				document.querySelectorAll(".numpad"),
-
-			btnDel:
-				document.querySelector(".btnDel"),
-
-			btnContinue:
-				document.querySelector(".btnContinue"),
-
-			btnCheck:
-				document.querySelector(".btnCheck"),
-
-			btnGiveUp:
-				document.querySelector(".btnGiveUp")
-				?? document.querySelector("header a"),
-
-			textBar:
-				document.querySelector(".text-bar"),
-
-			contentContainer:
-				document.querySelector(
-					".contentContainer"
-				)
+			dialog: document.querySelector(".dialog p"),
+			lineEquation: document.querySelector(".lineEqn"),
+			numpads: document.querySelectorAll(".numpad"),
+			btnDel: document.querySelector(".btnDel"),
+			btnContinue: document.querySelector(".btnContinue"),
+			btnCheck: document.querySelector(".btnCheck"),
+			timerLine: document.querySelector(".timerLineBart"),
+			barFill: document.querySelector(".barFill"),
+			textBar: document.querySelector(".text-bar"),
+			contentContainer: document.querySelector(".contentContainer")
 		};
 
-		// Buang progress bar daripada header.
-		document.querySelector(".bar")?.remove();
-
 		// =====================================
-		// RENDER PERSAMAAN
+		// 4. RENDER PERSAMAAN
 		// =====================================
 
 		function renderEquation(data) {
-			const {
-				numbers,
-				operator
-			} = data.content;
+			const { numbers, operator } = data.content;
 
 			const equationHTML = numbers
 				.map((number, index) => {
-					const operatorHTML =
-						index < numbers.length - 1
-							? `<h1>${operator}</h1>`
-							: "";
+					const operatorHTML = index < numbers.length - 1 ? `<h1>${operator}</h1>` : "";
 
 					return `
-					<h1>${number}</h1>
-					${operatorHTML}
-				`;
-				})
-				.join("");
+						<h1>${number}</h1>
+						${operatorHTML}
+					`;
+				}).join("");
 
-			ui.lineEquation.innerHTML = `
-			${equationHTML}
-			<h1>=</h1>
-			<h1 class="eqn">?</h1>
-		`;
+			ui.lineEquation.innerHTML = `${equationHTML}
+										<h1>=</h1>
+										<h1 class="eqn">?</h1>
+								`;
 
-			const totalColumns =
-				(numbers.length * 2) + 1;
+			const totalColumns = (numbers.length * 2) + 1;
 
-			ui.lineEquation.style.gridTemplateColumns =
-				`repeat(${totalColumns}, 1fr)`;
+			ui.lineEquation.style.gridTemplateColumns = `repeat(${totalColumns}, 1fr)`;
 		}
 
 		// =====================================
-		// PAPARAN INPUT
+		// 5. UPDATE JAWAPAN
 		// =====================================
 
 		function getAnswerDisplay() {
 			return ui.lineEquation.querySelector(".eqn");
 		}
 
-		function updateAnswerDisplay() {
+		function updatePlaceholder() {
 			const answerDisplay = getAnswerDisplay();
 
 			if (state.inputValue === "") {
 				answerDisplay.textContent = "?";
 				state.pickedNumber = null;
-
-				// Tidak boleh CHECK jika belum jawab.
 				ui.btnCheck.disabled = true;
-
 				return;
 			}
 
-			answerDisplay.textContent =
-				state.inputValue;
+			answerDisplay.textContent = state.inputValue;
 
 			state.pickedNumber =
 				Number(state.inputValue);
@@ -288,22 +223,11 @@
 		}
 
 		// =====================================
-		// STATUS
-		// =====================================
-
-		function updateQuizStatus() {
-			ui.textBar.textContent =
-				`Soalan ${state.questionNumber} | Skor ${state.score}`;
-		}
-
-		// =====================================
-		// NUMPAD
+		// 6. NUMPAD
 		// =====================================
 
 		function handleNumpad(event) {
-			if (state.phase !== "answering") {
-				return;
-			}
+			if (state.phase !== "answering") return;
 
 			const number =
 				event.currentTarget.textContent.trim();
@@ -317,25 +241,23 @@
 				return;
 			}
 
-			// Elakkan input seperti 01 atau 02.
+			// Elakkan 01, 02 dan sebagainya
 			if (state.inputValue === "0") {
 				state.inputValue = number;
 			} else {
 				state.inputValue += number;
 			}
 
-			updateAnswerDisplay();
+			updatePlaceholder();
 		}
 
 		function handleDelete() {
-			if (state.phase !== "answering") {
-				return;
-			}
+			if (state.phase !== "answering") return;
 
 			state.inputValue =
 				state.inputValue.slice(0, -1);
 
-			updateAnswerDisplay();
+			updatePlaceholder();
 		}
 
 		function lockNumpad() {
@@ -355,49 +277,65 @@
 		}
 
 		// =====================================
-		// CHECK
+		// 7. TIMER
+		// =====================================
+
+		function stopTimer() {
+			clearTimeout(state.timerId);
+			state.timerId = null;
+		}
+
+		function startTimer() {
+			stopTimer();
+
+			const seconds =
+				state.currentData.timeLimit ?? 15;
+
+			ui.timerLine.style.transition = "none";
+			ui.timerLine.style.width = "100%";
+
+			// Paksa browser reset animation
+			void ui.timerLine.offsetWidth;
+
+			ui.timerLine.style.transition =
+				`width ${seconds}s linear`;
+
+			requestAnimationFrame(() => {
+				ui.timerLine.style.width = "0%";
+			});
+
+			state.timerId = setTimeout(() => {
+				finishQuestion(true);
+			}, seconds * 1000);
+		}
+
+		// =====================================
+		// 8. CHECK JAWAPAN
 		// =====================================
 
 		function handleCheck() {
-			if (state.phase !== "answering") {
-				return;
-			}
+			if (state.phase !== "answering") return;
+			if (state.pickedNumber === null) return;
 
-			// Jika belum masukkan jawapan, jangan buat apa-apa.
-			if (state.pickedNumber === null) {
-				return;
-			}
-
-			finishQuestion();
+			finishQuestion(false);
 		}
 
-		function finishQuestion() {
-			if (state.phase !== "answering") {
-				return;
-			}
+		function finishQuestion(isTimeout = false) {
+			if (state.phase !== "answering") return;
 
-			const correctAnswer =
-				Number(state.currentData.answer);
+			stopTimer();
 
-			const isCorrect =
-				Number(state.pickedNumber) ===
-				correctAnswer;
+			const correctAnswer = Number(state.currentData.answer);
+
+			const isCorrect = !isTimeout && Number(state.pickedNumber) === correctAnswer;
 
 			state.phase = "review";
-			state.answeredCount++;
-
 			lockNumpad();
 
 			ui.btnCheck.classList.add("hidden");
+			ui.btnContinue.classList.remove("hidden");
 
-			ui.btnContinue.classList.remove(
-				"hidden"
-			);
-
-			ui.btnContinue.textContent = "NEXT";
-
-			const answerDisplay =
-				getAnswerDisplay();
+			const answerDisplay = getAnswerDisplay();
 
 			if (isCorrect) {
 				state.score++;
@@ -406,118 +344,106 @@
 					"Betul! Syabas!";
 
 				ui.dialog.style.color = "#22a000";
-
-				answerDisplay.style.color =
-					"#22a000";
+				answerDisplay.style.color = "#22a000";
 			} else {
-				ui.dialog.textContent =
-					`Salah. Jawapannya ialah ${correctAnswer}.`;
+				ui.dialog.textContent = isTimeout
+					? `Masa tamat! Jawapannya ialah ${correctAnswer}.`
+					: `Salah. Jawapannya ialah ${correctAnswer}.`;
 
 				ui.dialog.style.color = "#e53935";
+				answerDisplay.style.color = "#e53935";
 
-				answerDisplay.style.color =
-					"#e53935";
-
-				answerDisplay.textContent =
-					correctAnswer;
+				answerDisplay.textContent = correctAnswer;
 			}
 
-			updateQuizStatus();
+			const lastQuestion =
+				state.index === json.length - 1;
+
+			ui.btnContinue.textContent =
+				lastQuestion ? "RESULT" : "NEXT";
 		}
 
 		// =====================================
-		// NEXT
+		// 9. NEXT
 		// =====================================
 
 		function handleContinue() {
-			if (state.phase !== "review") {
+			if (state.phase !== "review") return;
+
+			const lastQuestion =
+				state.index >= json.length - 1;
+
+			if (lastQuestion) {
+				showResult();
 				return;
 			}
 
+			state.index++;
 			startQuestion();
 		}
 
 		// =====================================
-		// SOALAN BAHARU
+		// 10. START SOALAN
 		// =====================================
 
 		function startQuestion() {
-			state.currentData = getNextQuestion();
+			state.currentData = json[state.index];
 
-			state.questionNumber++;
 			state.inputValue = "";
 			state.pickedNumber = null;
 			state.phase = "answering";
 
 			renderEquation(state.currentData);
 
-			ui.dialog.textContent =
-				state.currentData.text;
+			ui.dialog.textContent = state.currentData.text;
 
 			ui.dialog.style.color = "";
 
-			updateQuizStatus();
+			ui.textBar.textContent = `${state.index + 1}/${json.length} Questions`;
+
+			ui.barFill.style.width = `${((state.index + 1) / json.length) * 100}%`;
 
 			ui.btnCheck.classList.remove("hidden");
-
 			ui.btnContinue.classList.add("hidden");
 
 			ui.btnCheck.disabled = true;
 			ui.btnContinue.textContent = "NEXT";
 
 			unlockNumpad();
-			updateAnswerDisplay();
+			updatePlaceholder();
+			startTimer();
 		}
 
 		// =====================================
-		// GIVE UP / RESULT
+		// 11. KEPUTUSAN AKHIR
 		// =====================================
 
 		function showResult() {
-			if (state.phase === "complete") {
-				return;
-			}
+			stopTimer();
 
 			state.phase = "complete";
 
-			lockNumpad();
+			ui.barFill.style.width = "100%";
+			ui.textBar.textContent =
+				`${json.length}/${json.length} Questions`;
 
-			const totalAnswered =
-				state.answeredCount;
-
-			const percentage =
-				totalAnswered === 0
-					? 0
-					: Math.round(
-						(
-							state.score /
-							totalAnswered
-						) * 100
-					);
-
-			ui.textBar.textContent = "Kuiz Tamat";
+			const percentage = Math.round(
+				(state.score / json.length) * 100
+			);
 
 			ui.dialog.textContent =
-				"Kuiz telah ditamatkan.";
+				"Kuiz telah selesai!";
 
 			ui.dialog.style.color = "";
-
-			ui.btnGiveUp?.classList.add("hidden");
 
 			ui.contentContainer.innerHTML = `
 			<div class="output">
 				<div class="quizResult">
-					<h1>Keputusan</h1>
+					<h1>Tahniah!</h1>
 
 					<h2>
-						Skor:
-						${state.score}/${totalAnswered}
+						Skor: ${state.score}/${json.length}
 					</h2>
-
-					<p>
-						Soalan dijawab:
-						${totalAnswered}
-					</p>
 
 					<h2>${percentage}%</h2>
 
@@ -540,18 +466,23 @@
 
 			document
 				.querySelector(".btnRestart")
-				.addEventListener("click", () => {
-					window.location.reload();
-				});
+				.addEventListener("click", restartQuiz);
 		}
 
-		function handleGiveUp(event) {
-			event.preventDefault();
-			showResult();
+		function restartQuiz() {
+			json = createQuizQuestions();
+
+			state.index = 0;
+			state.score = 0;
+			state.inputValue = "";
+			state.pickedNumber = null;
+			state.phase = "answering";
+
+			window.location.reload();
 		}
 
 		// =====================================
-		// EVENT LISTENER
+		// 12. EVENT LISTENER
 		// =====================================
 
 		ui.numpads.forEach(button => {
@@ -576,13 +507,8 @@
 			handleContinue
 		);
 
-		ui.btnGiveUp?.addEventListener(
-			"click",
-			handleGiveUp
-		);
-
 		// =====================================
-		// MULA
+		// 13. MULA QUIZ
 		// =====================================
 
 		startQuestion();

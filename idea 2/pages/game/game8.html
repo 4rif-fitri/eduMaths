@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+	<link rel="stylesheet" href="../../src/style/game.css">
+	<style>
+		.boxSoalan,
+		.boxJawapan {
+			cursor: pointer;
+			transition:
+				transform 0.2s,
+				background-color 0.2s,
+				border-color 0.2s;
+		}
+
+		.boxSoalan:hover,
+		.boxJawapan:hover {
+			transform: translateY(-3px);
+		}
+
+		.boxSoalan.selected,
+		.boxJawapan.selected {
+			color: #0b2f68;
+			background-color: #dbeafe;
+			border: 4px solid #3b82f6;
+		}
+
+		.boxSoalan.wrong,
+		.boxJawapan.wrong {
+			color: #991b1b;
+			background-color: #fee2e2;
+			border-color: #ef4444;
+		}
+
+		.boxSoalan.matched,
+		.boxJawapan.matched {
+			color: #166534;
+			background-color: #dcfce7;
+			border-color: #22c55e;
+			opacity: 0.7;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Slide</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p>
+							Tekan dua kad untuk mencari pasangan yang sama
+						</p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+					<div class="output">
+						<div class="grid-2 w-100 gap-3 p-2">
+
+							<div class="left">
+								<h3>Lorem</h3>
+								<div class="left-content">
+									<div class="soft-box boxSoalan">
+										<h1>1 + 2</h1>
+									</div>
+									<div class="soft-box boxSoalan">
+										<h1>1 + 2</h1>
+									</div>
+									<div class="soft-box boxSoalan">
+										<h1>1 + 2</h1>
+									</div>
+									<div class="soft-box boxSoalan">
+										<h1>5 + 3</h1>
+									</div>
+								</div>
+
+							</div>
+
+							<div class="right">
+								<h3>Lorem</h3>
+								<div class="right-content">
+									<div class="soft-box boxJawapan">
+										<h1>5 </h1>
+									</div>
+									<div class="soft-box boxJawapan">
+										<h1>5</h1>
+									</div>
+									<div class="soft-box boxJawapan">
+										<h1>5</h1>
+									</div>
+									<div class="soft-box boxJawapan">
+										<h1>5</h1>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+				</div>
+
+			</section>
+
+			<footer>
+				<div class="textContainer textBetul">
+					<h2 class="hidden"></h2>
+					<p class="hidden"></p>
+				</div>
+				<div class="btnContainer">
+					<button class="btnContinue soft-box hidden">CONTINUE</button>
+					<button class="btnCheck soft-box hidden">CHECK</button>
+				</div>
+			</footer>
+		</main>
+	</div>
+
+	<script type="module">
+		// =====================================
+		// DATA SOALAN
+		// =====================================
+
+		const questionBank = [
+			{
+				pairId: "pair-2",
+				question: "1 + 1",
+				answer: 2
+			},
+			{
+				pairId: "pair-3",
+				question: "1 + 2",
+				answer: 3
+			},
+			{
+				pairId: "pair-4",
+				question: "1 + 3",
+				answer: 4
+			},
+			{
+				pairId: "pair-5",
+				question: "2 + 3",
+				answer: 5
+			},
+			{
+				pairId: "pair-6",
+				question: "2 + 4",
+				answer: 6
+			},
+			{
+				pairId: "pair-7",
+				question: "3 + 4",
+				answer: 7
+			},
+			{
+				pairId: "pair-8",
+				question: "3 + 5",
+				answer: 8
+			},
+			{
+				pairId: "pair-9",
+				question: "4 + 5",
+				answer: 9
+			},
+			{
+				pairId: "pair-10",
+				question: "5 + 5",
+				answer: 10
+			},
+			{
+				pairId: "pair-11",
+				question: "5 + 6",
+				answer: 11
+			},
+			{
+				pairId: "pair-12",
+				question: "6 + 6",
+				answer: 12
+			}
+		];
+
+		const totalPairs = 4;
+
+		// =====================================
+		// STATE
+		// =====================================
+
+		const state = {
+			currentQuestions: [],
+
+			selectedQuestion: null,
+			selectedAnswer: null,
+
+			matchedPairs: 0,
+			attempts: 0,
+
+			isLocked: false,
+			phase: "playing"
+		};
+
+		// =====================================
+		// UI
+		// =====================================
+
+		const ui = {
+			leftTitle:
+				document.querySelector(".left > h3"),
+
+			rightTitle:
+				document.querySelector(".right > h3"),
+
+			leftContent:
+				document.querySelector(".left-content"),
+
+			rightContent:
+				document.querySelector(".right-content"),
+
+			dialog:
+				document.querySelector(".dialog p"),
+
+			textBar:
+				document.querySelector(".text-bar"),
+
+			barFill:
+				document.querySelector(".barFill"),
+
+			btnContinue:
+				document.querySelector(".btnContinue"),
+
+			btnCheck:
+				document.querySelector(".btnCheck")
+		};
+
+		ui.leftTitle.textContent = "Soalan";
+		ui.rightTitle.textContent = "Jawapan";
+
+		// CHECK tidak diperlukan.
+		ui.btnCheck.classList.add("hidden");
+
+		// =====================================
+		// SHUFFLE
+		// =====================================
+
+		function shuffle(data) {
+			const result = [...data];
+
+			for (let i = result.length - 1; i > 0; i--) {
+				const randomIndex = Math.floor(
+					Math.random() * (i + 1)
+				);
+
+				[
+					result[i],
+					result[randomIndex]
+				] = [
+						result[randomIndex],
+						result[i]
+					];
+			}
+
+			return result;
+		}
+
+		// =====================================
+		// PILIH EMPAT SOALAN
+		// =====================================
+
+		function createQuestionSet() {
+			return shuffle(questionBank)
+				.slice(0, totalPairs);
+		}
+
+		// =====================================
+		// RENDER SOALAN
+		// =====================================
+
+		function renderQuestions() {
+			ui.leftContent.innerHTML =
+				state.currentQuestions
+					.map(item => {
+						return `
+							<div
+								class="soft-box boxSoalan"
+								data-pair-id="${item.pairId}"
+							>
+								<h1>
+									${item.question}
+								</h1>
+							</div>
+						`;
+					})
+					.join("");
+		}
+
+		// =====================================
+		// RENDER JAWAPAN
+		// =====================================
+
+		function renderAnswers() {
+			const shuffledAnswers = shuffle(
+				state.currentQuestions
+			);
+
+			ui.rightContent.innerHTML =
+				shuffledAnswers
+					.map(item => {
+						return `
+							<div
+								class="soft-box boxJawapan"
+								data-pair-id="${item.pairId}"
+							>
+								<h1>
+									${item.answer}
+								</h1>
+							</div>
+						`;
+					})
+					.join("");
+		}
+
+		// =====================================
+		// UPDATE PROGRESS
+		// =====================================
+
+		function updateProgress() {
+			ui.textBar.textContent =
+				`${state.matchedPairs}/${totalPairs} Pasangan | ${state.attempts} Percubaan`;
+
+			const percentage =
+				(
+					state.matchedPairs /
+					totalPairs
+				) * 100;
+
+			ui.barFill.style.width =
+				`${percentage}%`;
+		}
+
+		// =====================================
+		// PILIH SOALAN
+		// =====================================
+
+		function handleQuestionClick(event) {
+			const selected =
+				event.target.closest(".boxSoalan");
+
+			if (!selected) return;
+			if (state.isLocked) return;
+			if (state.phase !== "playing") return;
+
+			if (
+				selected.classList.contains(
+					"matched"
+				)
+			) {
+				return;
+			}
+
+			/*
+				Jika pengguna tukar soalan sebelum
+				memilih jawapan, buang highlight lama.
+			*/
+
+			state.selectedQuestion
+				?.classList.remove("selected");
+
+			state.selectedQuestion = selected;
+
+			selected.classList.add("selected");
+
+			ui.dialog.textContent =
+				"Sekarang pilih jawapan yang betul.";
+
+			ui.dialog.style.color = "";
+
+			tryCheckPair();
+		}
+
+		// =====================================
+		// PILIH JAWAPAN
+		// =====================================
+
+		function handleAnswerClick(event) {
+			const selected =
+				event.target.closest(".boxJawapan");
+
+			if (!selected) return;
+			if (state.isLocked) return;
+			if (state.phase !== "playing") return;
+
+			if (
+				selected.classList.contains(
+					"matched"
+				)
+			) {
+				return;
+			}
+
+			state.selectedAnswer
+				?.classList.remove("selected");
+
+			state.selectedAnswer = selected;
+
+			selected.classList.add("selected");
+
+			if (state.selectedQuestion === null) {
+				ui.dialog.textContent =
+					"Sila pilih satu soalan dahulu.";
+
+				ui.dialog.style.color = "";
+			}
+
+			tryCheckPair();
+		}
+
+		// =====================================
+		// SEMAK PASANGAN
+		// =====================================
+
+		function tryCheckPair() {
+			if (
+				state.selectedQuestion === null ||
+				state.selectedAnswer === null
+			) {
+				return;
+			}
+
+			state.isLocked = true;
+			state.attempts++;
+
+			const questionElement =
+				state.selectedQuestion;
+
+			const answerElement =
+				state.selectedAnswer;
+
+			const questionPairId =
+				questionElement.dataset.pairId;
+
+			const answerPairId =
+				answerElement.dataset.pairId;
+
+			const isCorrect =
+				questionPairId === answerPairId;
+
+			if (isCorrect) {
+				handleCorrectPair(
+					questionElement,
+					answerElement
+				);
+			} else {
+				handleWrongPair(
+					questionElement,
+					answerElement
+				);
+			}
+
+			updateProgress();
+		}
+
+		// =====================================
+		// PASANGAN BETUL
+		// =====================================
+
+		function handleCorrectPair(
+			questionElement,
+			answerElement
+		) {
+			questionElement.classList.remove(
+				"selected"
+			);
+
+			answerElement.classList.remove(
+				"selected"
+			);
+
+			questionElement.classList.add(
+				"matched"
+			);
+
+			answerElement.classList.add(
+				"matched"
+			);
+
+			questionElement.style.pointerEvents =
+				"none";
+
+			answerElement.style.pointerEvents =
+				"none";
+
+			state.matchedPairs++;
+
+			ui.dialog.textContent =
+				"Betul! Pasangan berjaya dipadankan.";
+
+			ui.dialog.style.color = "#22a000";
+
+			resetSelection();
+
+			if (
+				state.matchedPairs === totalPairs
+			) {
+				finishGame();
+			}
+		}
+
+		// =====================================
+		// PASANGAN SALAH
+		// =====================================
+
+		function handleWrongPair(
+			questionElement,
+			answerElement
+		) {
+			questionElement.classList.add("wrong");
+			answerElement.classList.add("wrong");
+
+			ui.dialog.textContent =
+				"Pasangan salah. Cuba lagi!";
+
+			ui.dialog.style.color = "#e53935";
+
+			setTimeout(() => {
+				questionElement.classList.remove(
+					"selected",
+					"wrong"
+				);
+
+				answerElement.classList.remove(
+					"selected",
+					"wrong"
+				);
+
+				resetSelection();
+
+				ui.dialog.textContent =
+					"Pilih satu soalan dan jawapan yang sepadan.";
+
+				ui.dialog.style.color = "";
+			}, 700);
+		}
+
+		// =====================================
+		// RESET PILIHAN
+		// =====================================
+
+		function resetSelection() {
+			state.selectedQuestion = null;
+			state.selectedAnswer = null;
+			state.isLocked = false;
+		}
+
+		// =====================================
+		// TAMAT GAME
+		// =====================================
+
+		function finishGame() {
+			state.phase = "complete";
+			state.isLocked = true;
+
+			ui.barFill.style.width = "100%";
+
+			ui.textBar.textContent =
+				`${totalPairs}/${totalPairs} Pasangan`;
+
+			ui.dialog.textContent =
+				`Tahniah! Semua pasangan ditemui dalam ${state.attempts} percubaan.`;
+
+			ui.dialog.style.color = "#22a000";
+
+			ui.btnContinue.textContent =
+				"MAIN SEMULA";
+
+			ui.btnContinue.classList.remove(
+				"hidden"
+			);
+		}
+
+		// =====================================
+		// START / RESTART
+		// =====================================
+
+		function startGame() {
+			state.currentQuestions =
+				createQuestionSet();
+
+			state.selectedQuestion = null;
+			state.selectedAnswer = null;
+
+			state.matchedPairs = 0;
+			state.attempts = 0;
+
+			state.isLocked = false;
+			state.phase = "playing";
+
+			ui.dialog.textContent =
+				"Pilih satu soalan dan jawapan yang sepadan.";
+
+			ui.dialog.style.color = "";
+
+			ui.btnContinue.classList.add(
+				"hidden"
+			);
+
+			renderQuestions();
+			renderAnswers();
+			updateProgress();
+		}
+
+		// =====================================
+		// EVENT LISTENER
+		// =====================================
+
+		ui.leftContent.addEventListener(
+			"click",
+			handleQuestionClick
+		);
+
+		ui.rightContent.addEventListener(
+			"click",
+			handleAnswerClick
+		);
+
+		ui.btnContinue.addEventListener(
+			"click",
+			startGame
+		);
+
+		// =====================================
+		// MULA GAME
+		// =====================================
+
+		startGame();
+	</script>
+
+</body>
+
+</html>

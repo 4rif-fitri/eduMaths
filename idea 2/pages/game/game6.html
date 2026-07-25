@@ -229,134 +229,427 @@
 		</main>
 	</div>
 
-	<!-- <script type="module">
-		import { widgetRegistry } from "../../src/js/utils/widgetRegistry.js"
-		import { showWrong, showCorrect, resetContentFooter, showPopUpDone } from "../../src/js/utils/helper.js"
+	<script type="module">
+		// =====================================
+		// DATA PASANGAN
+		// =====================================
 
-		let json = [
+		const pairData = [
 			{
-				text: "True or False",
-				type: "TrueFalse",
-				content: {
-					nums: [5, 5, 10]
-				},
-				options: ["True", "False"],
-				answer: "True",
-			}, {
-				text: "True or False",
-				type: "TrueFalse",
-				content: {
-					nums: [8, 5, 10]
-				},
-				options: ["True", "False"],
-				answer: "False",
+				pairId: 1,
+				values: ["1 + 1", "2"]
 			},
 			{
-				text: "True or False",
-				type: "TrueFalse",
-				content: {
-					nums: [3, 6, 10]
-				},
-				options: ["True", "False"],
-				answer: "False",
-			}, {
-				text: "True or False",
-				type: "TrueFalse",
-				content: {
-					nums: [3, 7, 10]
-				},
-				options: ["True", "False"],
-				answer: "True",
-			}, {
-				text: "True or False",
-				type: "TrueFalse",
-				content: {
-					nums: [2, 8, 10]
-				},
-				options: ["True", "False"],
-				answer: "True",
+				pairId: 2,
+				values: ["1 + 2", "3"]
 			},
+			{
+				pairId: 3,
+				values: ["1 + 3", "4"]
+			},
+			{
+				pairId: 4,
+				values: ["2 + 3", "5"]
+			},
+			{
+				pairId: 5,
+				values: ["2 + 4", "6"]
+			},
+			{
+				pairId: 6,
+				values: ["3 + 4", "7"]
+			},
+			{
+				pairId: 7,
+				values: ["3 + 5", "8"]
+			},
+			{
+				pairId: 8,
+				values: ["4 + 5", "9"]
+			}
+		];
 
-		]
-		let state = {
-			currentData: null,
-			index: 0,
-			numberPicked: null,
-			isReset: false,
-			question: null,
-			lenghtData: json.length,
+		// =====================================
+		// STATE
+		// =====================================
+
+		const state = {
+			firstCard: null,
+			secondCard: null,
+
+			isLocked: false,
+			matchedPairs: 0,
+			attempts: 0,
+
+			phase: "playing"
+		};
+
+		// =====================================
+		// UI
+		// =====================================
+
+		const ui = {
+			memoryContainer:
+				document.querySelector(
+					".memory-container"
+				),
+
+			dialog:
+				document.querySelector(".dialog p"),
+
+			textBar:
+				document.querySelector(".text-bar"),
+
+			barFill:
+				document.querySelector(".barFill"),
+
+			btnContinue:
+				document.querySelector(".btnContinue"),
+
+			btnCheck:
+				document.querySelector(".btnCheck")
+		};
+
+		const totalPairs = pairData.length;
+
+		// CHECK tidak diperlukan untuk memory game.
+		ui.btnCheck.classList.add("hidden");
+
+		// =====================================
+		// SHUFFLE
+		// =====================================
+
+		function shuffle(data) {
+			const result = [...data];
+
+			for (let i = result.length - 1; i > 0; i--) {
+				const randomIndex = Math.floor(
+					Math.random() * (i + 1)
+				);
+
+				[
+					result[i],
+					result[randomIndex]
+				] = [
+						result[randomIndex],
+						result[i]
+					];
+			}
+
+			return result;
 		}
 
-		let ui = {
-			barFill: document.querySelector(".barFill"),
-			btnCheck: document.querySelector(".btnCheck"),
-			btnContinue: document.querySelector(".btnContinue"),
-			footer: document.querySelector("footer"),
-			textBar: document.querySelector(".text-bar"),
-			textFooter: document.querySelector("footer h2"),
+		// =====================================
+		// BINA DECK
+		// =====================================
 
+		function createDeck() {
+			const deck = pairData.flatMap(pair => {
+				return pair.values.map(
+					(value, cardIndex) => {
+						return {
+							cardId:
+								`${pair.pairId}-${cardIndex}`,
+
+							pairId: pair.pairId,
+							value
+						};
+					}
+				);
+			});
+
+			return shuffle(deck);
 		}
 
-		let hanldeCheck = () => {
-			if (state.numberPicked == null || state.isReset == true) return
-			state.isReset = true
+		// =====================================
+		// RENDER KAD
+		// =====================================
 
-			if (state.question.check(state.numberPicked, state.currentData)) {
+		function renderCards() {
+			const deck = createDeck();
 
-				showCorrect(ui)
-				state.question?.afterCorrect(state.numberPicked, state.currentData)
+			ui.memoryContainer.innerHTML = deck
+				.map(card => {
+					return `
+						<div
+							class="card"
+							data-card-id="${card.cardId}"
+							data-pair-id="${card.pairId}"
+						>
+							<div class="innerCard">
+								<div class="back">
+									<h3>${card.value}</h3>
+								</div>
+	
+								<div class="front">
+									<h1>📗</h1>
+								</div>
+							</div>
+						</div>
+					`;
+				})
+				.join("");
+		}
 
+		// =====================================
+		// FLIP KAD
+		// =====================================
+
+		function flipCard(card) {
+			card.classList.add(
+				"flip",
+				"flipped"
+			);
+
+			card
+				.querySelector(".innerCard")
+				.style.transform =
+				"rotateY(180deg)";
+		}
+
+		function unflipCard(card) {
+			card.classList.remove(
+				"flip",
+				"flipped"
+			);
+
+			card
+				.querySelector(".innerCard")
+				.style.transform =
+				"rotateY(0deg)";
+		}
+
+		// =====================================
+		// STATUS PERMAINAN
+		// =====================================
+
+		function updateProgress() {
+			ui.textBar.textContent =
+				`${state.matchedPairs}/${totalPairs} Pasangan | ${state.attempts} Percubaan`;
+
+			const progress =
+				(
+					state.matchedPairs /
+					totalPairs
+				) * 100;
+
+			ui.barFill.style.width =
+				`${progress}%`;
+		}
+
+		// =====================================
+		// RESET PILIHAN
+		// =====================================
+
+		function resetTurn() {
+			state.firstCard = null;
+			state.secondCard = null;
+			state.isLocked = false;
+		}
+
+		// =====================================
+		// PASANGAN BETUL
+		// =====================================
+
+		function handleCorrectPair() {
+			state.matchedPairs++;
+
+			state.firstCard.classList.add(
+				"matched"
+			);
+
+			state.secondCard.classList.add(
+				"matched"
+			);
+
+			state.firstCard.style.pointerEvents =
+				"none";
+
+			state.secondCard.style.pointerEvents =
+				"none";
+
+			ui.dialog.textContent =
+				"Betul! Pasangan yang sama ditemui.";
+
+			ui.dialog.style.color = "#22a000";
+
+			updateProgress();
+			resetTurn();
+
+			if (
+				state.matchedPairs === totalPairs
+			) {
+				finishGame();
+			}
+		}
+
+		// =====================================
+		// PASANGAN SALAH
+		// =====================================
+
+		function handleWrongPair() {
+			ui.dialog.textContent =
+				"Bukan pasangan yang sama. Cuba lagi!";
+
+			ui.dialog.style.color = "#e53935";
+
+			setTimeout(() => {
+				unflipCard(state.firstCard);
+				unflipCard(state.secondCard);
+
+				resetTurn();
+
+				ui.dialog.textContent =
+					"Tekan dua kad untuk mencari pasangan yang sama.";
+
+				ui.dialog.style.color = "";
+			}, 800);
+		}
+
+		// =====================================
+		// SEMAK DUA KAD
+		// =====================================
+
+		function checkCards() {
+			state.attempts++;
+			state.isLocked = true;
+
+			const firstPairId =
+				state.firstCard.dataset.pairId;
+
+			const secondPairId =
+				state.secondCard.dataset.pairId;
+
+			const isSamePair =
+				firstPairId === secondPairId;
+
+			if (isSamePair) {
+				setTimeout(() => {
+					handleCorrectPair();
+				}, 400);
 			} else {
-				showWrong(ui)
-			}
-		}
-
-		let hanldeContinue = () => {
-
-			resetContentFooter(ui)
-
-			if (state.numberPicked == state.currentData.answer) {
-				ui.barFill.style.width = `${(state.index / state.lenghtData) * 100}%`
-				ui.textBar.textContent = `${state.index + 1}/${json.length} Questions`;
-
-				main()
-			} else {
-				document.querySelectorAll(".btnAns").forEach(btn => btn.classList.remove("higlight"))
+				handleWrongPair();
 			}
 
-			state.numberPicked = null;
-			state.isReset = false
+			updateProgress();
 		}
 
-		let main = (data = json[state.index++]) => {
-			if (state.index >= state.lenghtData + 1) {
-				showPopUpDone()
-				return
+		// =====================================
+		// KLIK KAD
+		// =====================================
+
+		function handleCardClick(event) {
+			const card =
+				event.target.closest(".card");
+
+			if (!card) return;
+
+			if (state.phase !== "playing") {
+				return;
 			}
 
-			state.currentData = data
-			state.question = widgetRegistry[state.currentData.type];
+			if (state.isLocked) {
+				return;
+			}
 
-			let dialog = document.createElement("div");
-			dialog.className = "output";
-			dialog.style.width = "100%"
+			if (
+				card === state.firstCard ||
+				card.classList.contains("matched")
+			) {
+				return;
+			}
 
-			let contentContainer = document.querySelector(".contentContainer")
+			flipCard(card);
 
-			contentContainer.innerHTML = ""
-			dialog.innerHTML = state.question.render(data);
-			contentContainer.appendChild(dialog);
+			if (state.firstCard === null) {
+				state.firstCard = card;
 
-			state.question.setup(value => state.numberPicked = value, () => !state.isReset);
-			document.querySelector(".dialog p").textContent = state.currentData.text
+				ui.dialog.textContent =
+					"Pilih satu lagi kad.";
+
+				ui.dialog.style.color = "";
+
+				return;
+			}
+
+			state.secondCard = card;
+
+			checkCards();
 		}
 
-		main()
+		// =====================================
+		// TAMAT PERMAINAN
+		// =====================================
 
-		ui.btnCheck.addEventListener("click", hanldeCheck)
-		ui.btnContinue.addEventListener("click", hanldeContinue)
+		function finishGame() {
+			state.phase = "complete";
+			state.isLocked = true;
 
-	</script> -->
+			ui.barFill.style.width = "100%";
+
+			ui.textBar.textContent =
+				`${totalPairs}/${totalPairs} Pasangan`;
+
+			ui.dialog.textContent =
+				`Tahniah! Semua pasangan ditemui dalam ${state.attempts} percubaan.`;
+
+			ui.dialog.style.color = "#22a000";
+
+			ui.btnContinue.textContent =
+				"MAIN SEMULA";
+
+			ui.btnContinue.classList.remove(
+				"hidden"
+			);
+		}
+
+		// =====================================
+		// MULA / RESTART GAME
+		// =====================================
+
+		function startGame() {
+			state.firstCard = null;
+			state.secondCard = null;
+
+			state.isLocked = false;
+			state.matchedPairs = 0;
+			state.attempts = 0;
+
+			state.phase = "playing";
+
+			ui.dialog.textContent =
+				"Tekan dua kad untuk mencari pasangan operasi dan jawapan.";
+
+			ui.dialog.style.color = "";
+
+			ui.btnContinue.classList.add(
+				"hidden"
+			);
+
+			renderCards();
+			updateProgress();
+		}
+
+		// =====================================
+		// EVENT LISTENER
+		// =====================================
+
+		ui.memoryContainer.addEventListener(
+			"click",
+			handleCardClick
+		);
+
+		ui.btnContinue.addEventListener(
+			"click",
+			startGame
+		);
+
+		// =====================================
+		// MULA GAME
+		// =====================================
+
+		startGame();
+	</script>
 
 </body>
 
