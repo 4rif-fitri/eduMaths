@@ -29,8 +29,8 @@ import { renderSummery } from "../render/teknik/Summery.js"
 import { renderSquareBoxDiagram } from "../render/SquareBoxDiagram.js"
 import { renderTrueFalse } from "../render/TrueFalse.js"
 import { renderPickPair10, renderSumThree10 } from "../render/ThreeMake10.js";
-
 import { setupPickPair10, checkPair10 } from "../logic/pickPair10Logic.js";
+import { mountPadankan } from "../render/components/Padankan.js"
 
 export let widgetRegistry = {
 
@@ -233,9 +233,9 @@ export let widgetRegistry = {
 				currentData.content.total;
 		}
 	},
+	padankan: {
+		mount: mountPadankan
+	},
 
-	// dragnDrop1:{
-	// 	render: renderDragDrop1,
-	// 	setup: setupDragDrop1,
-	// }
+
 }
