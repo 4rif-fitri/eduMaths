@@ -139,73 +139,42 @@
 	</div>
 
 	<script type="module">
-		// =====================================
-		// DATA SOALAN
-		// =====================================
-
 		const questionBank = [
 			{
-				pairId: "pair-2",
-				question: "1 + 1",
+				text: "Padankan yang betul",
+				type: "padankan",
+				content: {
+					question: "1 + 1",
+				},
 				answer: 2
 			},
 			{
-				pairId: "pair-3",
-				question: "1 + 2",
-				answer: 3
+				text: "Padankan yang betul",
+				type: "padankan",
+				content: {
+					question: "1 + 1",
+				},
+				answer: 2
 			},
 			{
-				pairId: "pair-4",
-				question: "1 + 3",
-				answer: 4
+				text: "Padankan yang betul",
+				type: "padankan",
+				content: {
+					question: "1 + 1",
+				},
+				answer: 2
 			},
 			{
-				pairId: "pair-5",
-				question: "2 + 3",
-				answer: 5
+				text: "Padankan yang betul",
+				type: "padankan",
+				content: {
+					question: "1 + 1",
+				},
+				answer: 2
 			},
-			{
-				pairId: "pair-6",
-				question: "2 + 4",
-				answer: 6
-			},
-			{
-				pairId: "pair-7",
-				question: "3 + 4",
-				answer: 7
-			},
-			{
-				pairId: "pair-8",
-				question: "3 + 5",
-				answer: 8
-			},
-			{
-				pairId: "pair-9",
-				question: "4 + 5",
-				answer: 9
-			},
-			{
-				pairId: "pair-10",
-				question: "5 + 5",
-				answer: 10
-			},
-			{
-				pairId: "pair-11",
-				question: "5 + 6",
-				answer: 11
-			},
-			{
-				pairId: "pair-12",
-				question: "6 + 6",
-				answer: 12
-			}
 		];
 
 		const totalPairs = 4;
-
-		// =====================================
-		// STATE
-		// =====================================
 
 		const state = {
 			currentQuestions: [],
@@ -220,37 +189,17 @@
 			phase: "playing"
 		};
 
-		// =====================================
-		// UI
-		// =====================================
 
 		const ui = {
-			leftTitle:
-				document.querySelector(".left > h3"),
-
-			rightTitle:
-				document.querySelector(".right > h3"),
-
-			leftContent:
-				document.querySelector(".left-content"),
-
-			rightContent:
-				document.querySelector(".right-content"),
-
-			dialog:
-				document.querySelector(".dialog p"),
-
-			textBar:
-				document.querySelector(".text-bar"),
-
-			barFill:
-				document.querySelector(".barFill"),
-
-			btnContinue:
-				document.querySelector(".btnContinue"),
-
-			btnCheck:
-				document.querySelector(".btnCheck")
+			leftTitle: document.querySelector(".left > h3"),
+			rightTitle: document.querySelector(".right > h3"),
+			leftContent: document.querySelector(".left-content"),
+			rightContent: document.querySelector(".right-content"),
+			dialog: document.querySelector(".dialog p"),
+			textBar: document.querySelector(".text-bar"),
+			barFill: document.querySelector(".barFill"),
+			btnContinue: document.querySelector(".btnContinue"),
+			btnCheck: document.querySelector(".btnCheck")
 		};
 
 		ui.leftTitle.textContent = "Soalan";
@@ -288,8 +237,7 @@
 		// =====================================
 
 		function createQuestionSet() {
-			return shuffle(questionBank)
-				.slice(0, totalPairs);
+			return shuffle(questionBank).slice(0, totalPairs);
 		}
 
 		// =====================================
@@ -319,9 +267,7 @@
 		// =====================================
 
 		function renderAnswers() {
-			const shuffledAnswers = shuffle(
-				state.currentQuestions
-			);
+			const shuffledAnswers = shuffle(state.currentQuestions);
 
 			ui.rightContent.innerHTML =
 				shuffledAnswers
@@ -345,17 +291,10 @@
 		// =====================================
 
 		function updateProgress() {
-			ui.textBar.textContent =
-				`${state.matchedPairs}/${totalPairs} Pasangan | ${state.attempts} Percubaan`;
+			ui.textBar.textContent = `${state.matchedPairs}/${totalPairs} Pasangan | ${state.attempts} Percubaan`;
 
-			const percentage =
-				(
-					state.matchedPairs /
-					totalPairs
-				) * 100;
-
-			ui.barFill.style.width =
-				`${percentage}%`;
+			const percentage = (state.matchedPairs / totalPairs) * 100;
+			ui.barFill.style.width = `${percentage}%`;
 		}
 
 		// =====================================
@@ -363,18 +302,13 @@
 		// =====================================
 
 		function handleQuestionClick(event) {
-			const selected =
-				event.target.closest(".boxSoalan");
+			const selected = event.target.closest(".boxSoalan");
 
 			if (!selected) return;
 			if (state.isLocked) return;
 			if (state.phase !== "playing") return;
 
-			if (
-				selected.classList.contains(
-					"matched"
-				)
-			) {
+			if (selected.classList.contains("matched")) {
 				return;
 			}
 
@@ -383,8 +317,7 @@
 				memilih jawapan, buang highlight lama.
 			*/
 
-			state.selectedQuestion
-				?.classList.remove("selected");
+			state.selectedQuestion?.classList.remove("selected");
 
 			state.selectedQuestion = selected;
 
@@ -403,18 +336,13 @@
 		// =====================================
 
 		function handleAnswerClick(event) {
-			const selected =
-				event.target.closest(".boxJawapan");
+			const selected = event.target.closest(".boxJawapan");
 
 			if (!selected) return;
 			if (state.isLocked) return;
 			if (state.phase !== "playing") return;
 
-			if (
-				selected.classList.contains(
-					"matched"
-				)
-			) {
+			if (selected.classList.contains("matched")) {
 				return;
 			}
 
@@ -426,8 +354,7 @@
 			selected.classList.add("selected");
 
 			if (state.selectedQuestion === null) {
-				ui.dialog.textContent =
-					"Sila pilih satu soalan dahulu.";
+				ui.dialog.textContent = "Sila pilih satu soalan dahulu.";
 
 				ui.dialog.style.color = "";
 			}
@@ -440,41 +367,27 @@
 		// =====================================
 
 		function tryCheckPair() {
-			if (
-				state.selectedQuestion === null ||
-				state.selectedAnswer === null
-			) {
+			if (state.selectedQuestion === null || state.selectedAnswer === null) {
 				return;
 			}
 
 			state.isLocked = true;
 			state.attempts++;
 
-			const questionElement =
-				state.selectedQuestion;
+			const questionElement = state.selectedQuestion;
 
-			const answerElement =
-				state.selectedAnswer;
+			const answerElement = state.selectedAnswer;
 
-			const questionPairId =
-				questionElement.dataset.pairId;
+			const questionPairId = questionElement.dataset.pairId;
 
-			const answerPairId =
-				answerElement.dataset.pairId;
+			const answerPairId = answerElement.dataset.pairId;
 
-			const isCorrect =
-				questionPairId === answerPairId;
+			const isCorrect = questionPairId === answerPairId;
 
 			if (isCorrect) {
-				handleCorrectPair(
-					questionElement,
-					answerElement
-				);
+				handleCorrectPair(questionElement, answerElement);
 			} else {
-				handleWrongPair(
-					questionElement,
-					answerElement
-				);
+				handleWrongPair(questionElement, answerElement);
 			}
 
 			updateProgress();
@@ -484,44 +397,23 @@
 		// PASANGAN BETUL
 		// =====================================
 
-		function handleCorrectPair(
-			questionElement,
-			answerElement
-		) {
-			questionElement.classList.remove(
-				"selected"
-			);
+		function handleCorrectPair(questionElement, answerElement) {
+			questionElement.classList.remove("selected");
+			answerElement.classList.remove("selected");
 
-			answerElement.classList.remove(
-				"selected"
-			);
+			questionElement.classList.add("matched");
+			answerElement.classList.add("matched");
 
-			questionElement.classList.add(
-				"matched"
-			);
-
-			answerElement.classList.add(
-				"matched"
-			);
-
-			questionElement.style.pointerEvents =
-				"none";
-
-			answerElement.style.pointerEvents =
-				"none";
+			questionElement.style.pointerEvents = "none";
+			answerElement.style.pointerEvents = "none";
 
 			state.matchedPairs++;
 
-			ui.dialog.textContent =
-				"Betul! Pasangan berjaya dipadankan.";
-
+			ui.dialog.textContent = "Betul! Pasangan berjaya dipadankan.";
 			ui.dialog.style.color = "#22a000";
-
 			resetSelection();
 
-			if (
-				state.matchedPairs === totalPairs
-			) {
+			if (state.matchedPairs === totalPairs) {
 				finishGame();
 			}
 		}
@@ -530,34 +422,21 @@
 		// PASANGAN SALAH
 		// =====================================
 
-		function handleWrongPair(
-			questionElement,
-			answerElement
-		) {
+		function handleWrongPair(questionElement, answerElement) {
 			questionElement.classList.add("wrong");
 			answerElement.classList.add("wrong");
 
-			ui.dialog.textContent =
-				"Pasangan salah. Cuba lagi!";
+			ui.dialog.textContent = "Pasangan salah. Cuba lagi!";
 
 			ui.dialog.style.color = "#e53935";
 
 			setTimeout(() => {
-				questionElement.classList.remove(
-					"selected",
-					"wrong"
-				);
-
-				answerElement.classList.remove(
-					"selected",
-					"wrong"
-				);
+				questionElement.classList.remove("selected", "wrong");
+				answerElement.classList.remove("selected", "wrong");
 
 				resetSelection();
 
-				ui.dialog.textContent =
-					"Pilih satu soalan dan jawapan yang sepadan.";
-
+				ui.dialog.textContent = "Pilih satu soalan dan jawapan yang sepadan.";
 				ui.dialog.style.color = "";
 			}, 700);
 		}
@@ -582,29 +461,19 @@
 
 			ui.barFill.style.width = "100%";
 
-			ui.textBar.textContent =
-				`${totalPairs}/${totalPairs} Pasangan`;
-
-			ui.dialog.textContent =
-				`Tahniah! Semua pasangan ditemui dalam ${state.attempts} percubaan.`;
+			ui.textBar.textContent = `${totalPairs}/${totalPairs} Pasangan`;
+			ui.dialog.textContent = `Tahniah! Semua pasangan ditemui dalam ${state.attempts} percubaan.`;
 
 			ui.dialog.style.color = "#22a000";
 
-			ui.btnContinue.textContent =
-				"MAIN SEMULA";
+			ui.btnContinue.textContent = "MAIN SEMULA";
 
-			ui.btnContinue.classList.remove(
-				"hidden"
-			);
+			ui.btnContinue.classList.remove("hidden");
 		}
 
-		// =====================================
-		// START / RESTART
-		// =====================================
 
 		function startGame() {
-			state.currentQuestions =
-				createQuestionSet();
+			state.currentQuestions = createQuestionSet();
 
 			state.selectedQuestion = null;
 			state.selectedAnswer = null;
@@ -615,42 +484,20 @@
 			state.isLocked = false;
 			state.phase = "playing";
 
-			ui.dialog.textContent =
-				"Pilih satu soalan dan jawapan yang sepadan.";
+			ui.dialog.textContent = "Pilih satu soalan dan jawapan yang sepadan.";
 
 			ui.dialog.style.color = "";
 
-			ui.btnContinue.classList.add(
-				"hidden"
-			);
+			ui.btnContinue.classList.add("hidden");
 
 			renderQuestions();
 			renderAnswers();
 			updateProgress();
 		}
 
-		// =====================================
-		// EVENT LISTENER
-		// =====================================
-
-		ui.leftContent.addEventListener(
-			"click",
-			handleQuestionClick
-		);
-
-		ui.rightContent.addEventListener(
-			"click",
-			handleAnswerClick
-		);
-
-		ui.btnContinue.addEventListener(
-			"click",
-			startGame
-		);
-
-		// =====================================
-		// MULA GAME
-		// =====================================
+		ui.leftContent.addEventListener("click", handleQuestionClick);
+		ui.rightContent.addEventListener("click", handleAnswerClick);
+		ui.btnContinue.addEventListener("click", startGame);
 
 		startGame();
 	</script>

@@ -28,6 +28,9 @@ import { renderSum } from "../render/teknik/Sum.js"
 import { renderSummery } from "../render/teknik/Summery.js"
 import { renderSquareBoxDiagram } from "../render/SquareBoxDiagram.js"
 import { renderTrueFalse } from "../render/TrueFalse.js"
+import { renderPickPair10, renderSumThree10 } from "../render/ThreeMake10.js";
+
+import { setupPickPair10, checkPair10 } from "../logic/pickPair10Logic.js";
 
 export let widgetRegistry = {
 
@@ -72,7 +75,7 @@ export let widgetRegistry = {
 	LearnSummery: {
 		render: renderLearnSummery,
 	},
-	
+
 	Pick: {
 		render: renderPick,
 		setup: setupPick,
@@ -168,21 +171,69 @@ export let widgetRegistry = {
 		afterCorrect(numberPicked, currentData) {
 			updateContent(document.querySelector(".dialog p"), `${currentData.content.numberOfBox} perlukan ${currentData.answer} untuk jadi 10`)
 			let content = document.querySelector(".content")
-			Array.from({ length: currentData.answer }).map(() =>{
+			Array.from({ length: currentData.answer }).map(() => {
 				let div = document.createElement("div")
-				div.classList.add("box","pop")
+				div.classList.add("box", "pop")
 				content.appendChild(div)
 			})
 
 		},
 	},
 
-	TrueFalse:{
+	TrueFalse: {
 		render: renderTrueFalse,
 		setup: setupClickBtn,
 		check: defaultCheck,
-		afterCorrect: () => {},
+		afterCorrect: () => { },
 	},
+
+	PickPair10: {
+		render: renderPickPair10,
+		setup: setupPickPair10,
+		check: checkPair10,
+
+		afterCorrect(selectedIndices, currentData) {
+			const root =
+				document.querySelector(".output");
+
+			const buttons =
+				root.querySelectorAll(
+					".pairNumber"
+				);
+
+			currentData.answer.forEach(index => {
+				buttons[index].classList.add(
+					"pairCorrect"
+				);
+			});
+
+			root
+				.querySelector(".pairReveal")
+				.classList.remove("hidden");
+		}
+	},
+
+	SumThree10: {
+		render: renderSumThree10,
+		setup: setupClickBtn,
+		check: defaultCheck,
+
+		afterCorrect(selectedNumber, currentData) {
+			const root =
+				document.querySelector(".output");
+
+			root.querySelector(
+				".finalThreeAnswer"
+			).textContent =
+				currentData.content.total;
+
+			root.querySelector(
+				".simplifiedAnswer"
+			).textContent =
+				currentData.content.total;
+		}
+	},
+
 	// dragnDrop1:{
 	// 	render: renderDragDrop1,
 	// 	setup: setupDragDrop1,
