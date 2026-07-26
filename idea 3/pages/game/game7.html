@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/quiz.css">
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+</head>
+
+<body>
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Slide</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p>Good Luck</p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+					<div class="output">
+
+						<div class="split">
+							<section>
+								<div class="lineEqn grid-5">
+									<h1>5</h1>
+									<h1>+</h1>
+									<h1>5</h1>
+									<h1>+</h1>
+									<h1>5</h1>
+									<h1>=</h1>
+									<h1 class="eqn"></h1>
+								</div>
+							</section>
+
+							<section class="timerBar">
+								<div class="timerLineBart">
+
+								</div>
+							</section>
+
+							<section class="numpadContainer">
+								<div class="numpadWrapper">
+									<button class="soft-box numpad">7</button>
+									<button class="soft-box numpad">8</button>
+									<button class="soft-box numpad">9</button>
+									<button class="soft-box numpad">4</button>
+									<button class="soft-box numpad">5</button>
+									<button class="soft-box numpad">6</button>
+									<button class="soft-box numpad">1</button>
+									<button class="soft-box numpad">2</button>
+									<button class="soft-box numpad">3</button>
+									<button class="soft-box numpad">0</button>
+									<button class="soft-box btnDel"
+										style="width: 100%; height: 100%;">DEL</button>
+									<button class="soft-box btnContinue"
+										style="width: 100%; height: 100%;">NEXT</button>
+									<button class="soft-box btnCheck hidden"
+										style="width: 100%; height: 100%;">CHECK</button>
+								</div>
+							</section>
+						</div>
+
+					</div>
+
+				</div>
+
+			</section>
+
+		</main>
+	</div>
+	<script type="module">
+
+		function generateSoalanKombinasi() {
+			const questions = [];
+
+			for (let nombor1 = 1; nombor1 <= 9; nombor1++) {
+				for (
+					let nombor2 = nombor1;
+					nombor2 <= 9;
+					nombor2++
+				) {
+					questions.push({
+						text:
+							`Berapakah ${nombor1} tambah ${nombor2}?`,
+
+						type: "Numpad",
+
+						content: {
+							numbers: [nombor1, nombor2],
+							operator: "+"
+						},
+
+						answer: nombor1 + nombor2,
+						maxDigits: 2,
+						timeLimit: 15
+					});
+				}
+			}
+
+			return questions;
+		}
+
+		function shuffle(data) {
+			const result = [...data];
+
+			for (let i = result.length - 1; i > 0; i--) {
+				const randomIndex = Math.floor(
+					Math.random() * (i + 1)
+				);
+
+				[result[i], result[randomIndex]] = [result[randomIndex], result[i]];
+			}
+
+			return result;
+		}
+
+		function createQuizQuestions() {
+			const semuaSoalan = generateSoalanKombinasi();
+			return shuffle(semuaSoalan).slice(0, 10);
+		}
+
+		let json = createQuizQuestions();
+
+		const state = {
+			index: 0,
+			currentData: null,
+
+			inputValue: "",
+			pickedNumber: null,
+
+			score: 0,
+			phase: "answering",
+
+			timerId: null
+		};
+
+		const ui = {
+			dialog: document.querySelector(".dialog p"),
+			lineEquation: document.querySelector(".lineEqn"),
+			numpads: document.querySelectorAll(".numpad"),
+			btnDel: document.querySelector(".btnDel"),
+			btnContinue: document.querySelector(".btnContinue"),
+			btnCheck: document.querySelector(".btnCheck"),
+			timerLine: document.querySelector(".timerLineBart"),
+			barFill: document.querySelector(".barFill"),
+			textBar: document.querySelector(".text-bar"),
+			contentContainer: document.querySelector(".contentContainer")
+		};
+
+		// =====================================
+		// 4. RENDER PERSAMAAN
+		// =====================================
+
+		function renderEquation(data) {
+			const { numbers, operator } = data.content;
+
+			const equationHTML = numbers
+				.map((number, index) => {
+					const operatorHTML = index < numbers.length - 1 ? `<h1>${operator}</h1>` : "";
+
+					return `
+						<h1>${number}</h1>
+						${operatorHTML}
+					`;
+				}).join("");
+
+			ui.lineEquation.innerHTML = `${equationHTML}
+										<h1>=</h1>
+										<h1 class="eqn">?</h1>
+								`;
+
+			const totalColumns = (numbers.length * 2) + 1;
+
+			ui.lineEquation.style.gridTemplateColumns = `repeat(${totalColumns}, 1fr)`;
+		}
+
+		// =====================================
+		// 5. UPDATE JAWAPAN
+		// =====================================
+
+		function getAnswerDisplay() {
+			return ui.lineEquation.querySelector(".eqn");
+		}
+
+		function updatePlaceholder() {
+			const answerDisplay = getAnswerDisplay();
+
+			if (state.inputValue === "") {
+				answerDisplay.textContent = "?";
+				state.pickedNumber = null;
+				ui.btnCheck.disabled = true;
+				return;
+			}
+
+			answerDisplay.textContent = state.inputValue;
+
+			state.pickedNumber =
+				Number(state.inputValue);
+
+			ui.btnCheck.disabled = false;
+		}
+
+		// =====================================
+		// 6. NUMPAD
+		// =====================================
+
+		function handleNumpad(event) {
+			if (state.phase !== "answering") return;
+
+			const number =
+				event.currentTarget.textContent.trim();
+
+			const maxDigits =
+				state.currentData.maxDigits ?? 2;
+
+			if (
+				state.inputValue.length >= maxDigits
+			) {
+				return;
+			}
+
+			// Elakkan 01, 02 dan sebagainya
+			if (state.inputValue === "0") {
+				state.inputValue = number;
+			} else {
+				state.inputValue += number;
+			}
+
+			updatePlaceholder();
+		}
+
+		function handleDelete() {
+			if (state.phase !== "answering") return;
+
+			state.inputValue =
+				state.inputValue.slice(0, -1);
+
+			updatePlaceholder();
+		}
+
+		function lockNumpad() {
+			ui.numpads.forEach(button => {
+				button.disabled = true;
+			});
+
+			ui.btnDel.disabled = true;
+		}
+
+		function unlockNumpad() {
+			ui.numpads.forEach(button => {
+				button.disabled = false;
+			});
+
+			ui.btnDel.disabled = false;
+		}
+
+		// =====================================
+		// 7. TIMER
+		// =====================================
+
+		function stopTimer() {
+			clearTimeout(state.timerId);
+			state.timerId = null;
+		}
+
+		function startTimer() {
+			stopTimer();
+
+			const seconds =
+				state.currentData.timeLimit ?? 15;
+
+			ui.timerLine.style.transition = "none";
+			ui.timerLine.style.width = "100%";
+
+			// Paksa browser reset animation
+			void ui.timerLine.offsetWidth;
+
+			ui.timerLine.style.transition =
+				`width ${seconds}s linear`;
+
+			requestAnimationFrame(() => {
+				ui.timerLine.style.width = "0%";
+			});
+
+			state.timerId = setTimeout(() => {
+				finishQuestion(true);
+			}, seconds * 1000);
+		}
+
+		// =====================================
+		// 8. CHECK JAWAPAN
+		// =====================================
+
+		function handleCheck() {
+			if (state.phase !== "answering") return;
+			if (state.pickedNumber === null) return;
+
+			finishQuestion(false);
+		}
+
+		function finishQuestion(isTimeout = false) {
+			if (state.phase !== "answering") return;
+
+			stopTimer();
+
+			const correctAnswer = Number(state.currentData.answer);
+
+			const isCorrect = !isTimeout && Number(state.pickedNumber) === correctAnswer;
+
+			state.phase = "review";
+			lockNumpad();
+
+			ui.btnCheck.classList.add("hidden");
+			ui.btnContinue.classList.remove("hidden");
+
+			const answerDisplay = getAnswerDisplay();
+
+			if (isCorrect) {
+				state.score++;
+
+				ui.dialog.textContent =
+					"Betul! Syabas!";
+
+				ui.dialog.style.color = "#22a000";
+				answerDisplay.style.color = "#22a000";
+			} else {
+				ui.dialog.textContent = isTimeout
+					? `Masa tamat! Jawapannya ialah ${correctAnswer}.`
+					: `Salah. Jawapannya ialah ${correctAnswer}.`;
+
+				ui.dialog.style.color = "#e53935";
+				answerDisplay.style.color = "#e53935";
+
+				answerDisplay.textContent = correctAnswer;
+			}
+
+			const lastQuestion =
+				state.index === json.length - 1;
+
+			ui.btnContinue.textContent =
+				lastQuestion ? "RESULT" : "NEXT";
+		}
+
+		// =====================================
+		// 9. NEXT
+		// =====================================
+
+		function handleContinue() {
+			if (state.phase !== "review") return;
+
+			const lastQuestion =
+				state.index >= json.length - 1;
+
+			if (lastQuestion) {
+				showResult();
+				return;
+			}
+
+			state.index++;
+			startQuestion();
+		}
+
+		// =====================================
+		// 10. START SOALAN
+		// =====================================
+
+		function startQuestion() {
+			state.currentData = json[state.index];
+
+			state.inputValue = "";
+			state.pickedNumber = null;
+			state.phase = "answering";
+
+			renderEquation(state.currentData);
+
+			ui.dialog.textContent = state.currentData.text;
+
+			ui.dialog.style.color = "";
+
+			ui.textBar.textContent = `${state.index + 1}/${json.length} Questions`;
+
+			ui.barFill.style.width = `${((state.index + 1) / json.length) * 100}%`;
+
+			ui.btnCheck.classList.remove("hidden");
+			ui.btnContinue.classList.add("hidden");
+
+			ui.btnCheck.disabled = true;
+			ui.btnContinue.textContent = "NEXT";
+
+			unlockNumpad();
+			updatePlaceholder();
+			startTimer();
+		}
+
+		// =====================================
+		// 11. KEPUTUSAN AKHIR
+		// =====================================
+
+		function showResult() {
+			stopTimer();
+
+			state.phase = "complete";
+
+			ui.barFill.style.width = "100%";
+			ui.textBar.textContent =
+				`${json.length}/${json.length} Questions`;
+
+			const percentage = Math.round(
+				(state.score / json.length) * 100
+			);
+
+			ui.dialog.textContent =
+				"Kuiz telah selesai!";
+
+			ui.dialog.style.color = "";
+
+			ui.contentContainer.innerHTML = `
+			<div class="output">
+				<div class="quizResult">
+					<h1>Tahniah!</h1>
+
+					<h2>
+						Skor: ${state.score}/${json.length}
+					</h2>
+
+					<h2>${percentage}%</h2>
+
+					<button
+						type="button"
+						class="soft-box btnRestart"
+					>
+						MAIN SEMULA
+					</button>
+
+					<a
+						href="./index.html"
+						class="soft-box"
+					>
+						KELUAR
+					</a>
+				</div>
+			</div>
+		`;
+
+			document
+				.querySelector(".btnRestart")
+				.addEventListener("click", restartQuiz);
+		}
+
+		function restartQuiz() {
+			json = createQuizQuestions();
+
+			state.index = 0;
+			state.score = 0;
+			state.inputValue = "";
+			state.pickedNumber = null;
+			state.phase = "answering";
+
+			window.location.reload();
+		}
+
+		// =====================================
+		// 12. EVENT LISTENER
+		// =====================================
+
+		ui.numpads.forEach(button => {
+			button.addEventListener(
+				"click",
+				handleNumpad
+			);
+		});
+
+		ui.btnDel.addEventListener(
+			"click",
+			handleDelete
+		);
+
+		ui.btnCheck.addEventListener(
+			"click",
+			handleCheck
+		);
+
+		ui.btnContinue.addEventListener(
+			"click",
+			handleContinue
+		);
+
+		// =====================================
+		// 13. MULA QUIZ
+		// =====================================
+
+		startQuestion();
+	</script>
+</body>
+
+</html>

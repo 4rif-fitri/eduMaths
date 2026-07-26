@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/quiz.css">
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+</head>
+
+<body>
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Slide</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p>Good Luck</p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+					<div class="output">
+
+						<div class="split">
+							<section>
+								<div class="lineEqn grid-5">
+									<h1>5</h1>
+									<h1>+</h1>
+									<h1>5</h1>
+									<h1>+</h1>
+									<h1>5</h1>
+									<h1>=</h1>
+									<h1 class="eqn"></h1>
+								</div>
+							</section>
+
+							<section>
+
+							</section>
+
+							<!-- <section class="timerBar">
+								<div class="timerLineBart">
+
+								</div>
+							</section> -->
+
+							<section class="numpadContainer">
+								<div class="numpadWrapper">
+									<button class="soft-box numpad">7</button>
+									<button class="soft-box numpad">8</button>
+									<button class="soft-box numpad">9</button>
+									<button class="soft-box numpad">4</button>
+									<button class="soft-box numpad">5</button>
+									<button class="soft-box numpad">6</button>
+									<button class="soft-box numpad">1</button>
+									<button class="soft-box numpad">2</button>
+									<button class="soft-box numpad">3</button>
+									<button class="soft-box numpad">0</button>
+									<button class="soft-box btnDel"
+										style="width: 100%; height: 100%;">DEL</button>
+									<button class="soft-box btnContinue"
+										style="width: 100%; height: 100%;">NEXT</button>
+									<button class="soft-box btnCheck hidden "
+										style="width: 100%; height: 100%;">CHECK</button>
+								</div>
+							</section>
+						</div>
+
+					</div>
+
+				</div>
+
+			</section>
+
+		</main>
+	</div>
+	<script type="module">
+		// =====================================
+		// GENERATE SOALAN
+		// =====================================
+
+		function generateSoalanKombinasi() {
+			const questions = [];
+
+			for (let nombor1 = 1; nombor1 <= 9; nombor1++) {
+				for (
+					let nombor2 = nombor1;
+					nombor2 <= 9;
+					nombor2++
+				) {
+					questions.push({
+						text:
+							`Berapakah ${nombor1} tambah ${nombor2}?`,
+
+						type: "Numpad",
+
+						content: {
+							numbers: [nombor1, nombor2],
+							operator: "+"
+						},
+
+						answer: nombor1 + nombor2,
+						maxDigits: 2
+					});
+				}
+			}
+
+			return questions;
+		}
+
+		function shuffle(data) {
+			const result = [...data];
+
+			for (let i = result.length - 1; i > 0; i--) {
+				const randomIndex = Math.floor(
+					Math.random() * (i + 1)
+				);
+
+				[
+					result[i],
+					result[randomIndex]
+				] = [
+						result[randomIndex],
+						result[i]
+					];
+			}
+
+			return result;
+		}
+
+		// =====================================
+		// SOALAN TANPA HAD
+		// =====================================
+
+		let questionQueue = [];
+
+		function getNextQuestion() {
+			if (questionQueue.length === 0) {
+				questionQueue = shuffle(
+					generateSoalanKombinasi()
+				);
+			}
+
+			return questionQueue.shift();
+		}
+
+		// =====================================
+		// STATE
+		// =====================================
+
+		const state = {
+			currentData: null,
+
+			inputValue: "",
+			pickedNumber: null,
+
+			questionNumber: 0,
+			answeredCount: 0,
+			score: 0,
+
+			phase: "answering"
+		};
+
+		// =====================================
+		// UI
+		// =====================================
+
+		const ui = {
+			dialog:
+				document.querySelector(".dialog p"),
+
+			lineEquation:
+				document.querySelector(".lineEqn"),
+
+			numpads:
+				document.querySelectorAll(".numpad"),
+
+			btnDel:
+				document.querySelector(".btnDel"),
+
+			btnContinue:
+				document.querySelector(".btnContinue"),
+
+			btnCheck:
+				document.querySelector(".btnCheck"),
+
+			btnGiveUp:
+				document.querySelector(".btnGiveUp")
+				?? document.querySelector("header a"),
+
+			textBar:
+				document.querySelector(".text-bar"),
+
+			contentContainer:
+				document.querySelector(
+					".contentContainer"
+				)
+		};
+
+		// Buang progress bar daripada header.
+		document.querySelector(".bar")?.remove();
+
+		// =====================================
+		// RENDER PERSAMAAN
+		// =====================================
+
+		function renderEquation(data) {
+			const {
+				numbers,
+				operator
+			} = data.content;
+
+			const equationHTML = numbers
+				.map((number, index) => {
+					const operatorHTML =
+						index < numbers.length - 1
+							? `<h1>${operator}</h1>`
+							: "";
+
+					return `
+					<h1>${number}</h1>
+					${operatorHTML}
+				`;
+				})
+				.join("");
+
+			ui.lineEquation.innerHTML = `
+			${equationHTML}
+			<h1>=</h1>
+			<h1 class="eqn">?</h1>
+		`;
+
+			const totalColumns =
+				(numbers.length * 2) + 1;
+
+			ui.lineEquation.style.gridTemplateColumns =
+				`repeat(${totalColumns}, 1fr)`;
+		}
+
+		// =====================================
+		// PAPARAN INPUT
+		// =====================================
+
+		function getAnswerDisplay() {
+			return ui.lineEquation.querySelector(".eqn");
+		}
+
+		function updateAnswerDisplay() {
+			const answerDisplay = getAnswerDisplay();
+
+			if (state.inputValue === "") {
+				answerDisplay.textContent = "?";
+				state.pickedNumber = null;
+
+				// Tidak boleh CHECK jika belum jawab.
+				ui.btnCheck.disabled = true;
+
+				return;
+			}
+
+			answerDisplay.textContent =
+				state.inputValue;
+
+			state.pickedNumber =
+				Number(state.inputValue);
+
+			ui.btnCheck.disabled = false;
+		}
+
+		// =====================================
+		// STATUS
+		// =====================================
+
+		function updateQuizStatus() {
+			ui.textBar.textContent =
+				`Soalan ${state.questionNumber} | Skor ${state.score}`;
+		}
+
+		// =====================================
+		// NUMPAD
+		// =====================================
+
+		function handleNumpad(event) {
+			if (state.phase !== "answering") {
+				return;
+			}
+
+			const number =
+				event.currentTarget.textContent.trim();
+
+			const maxDigits =
+				state.currentData.maxDigits ?? 2;
+
+			if (
+				state.inputValue.length >= maxDigits
+			) {
+				return;
+			}
+
+			// Elakkan input seperti 01 atau 02.
+			if (state.inputValue === "0") {
+				state.inputValue = number;
+			} else {
+				state.inputValue += number;
+			}
+
+			updateAnswerDisplay();
+		}
+
+		function handleDelete() {
+			if (state.phase !== "answering") {
+				return;
+			}
+
+			state.inputValue =
+				state.inputValue.slice(0, -1);
+
+			updateAnswerDisplay();
+		}
+
+		function lockNumpad() {
+			ui.numpads.forEach(button => {
+				button.disabled = true;
+			});
+
+			ui.btnDel.disabled = true;
+		}
+
+		function unlockNumpad() {
+			ui.numpads.forEach(button => {
+				button.disabled = false;
+			});
+
+			ui.btnDel.disabled = false;
+		}
+
+		// =====================================
+		// CHECK
+		// =====================================
+
+		function handleCheck() {
+			if (state.phase !== "answering") {
+				return;
+			}
+
+			// Jika belum masukkan jawapan, jangan buat apa-apa.
+			if (state.pickedNumber === null) {
+				return;
+			}
+
+			finishQuestion();
+		}
+
+		function finishQuestion() {
+			if (state.phase !== "answering") {
+				return;
+			}
+
+			const correctAnswer =
+				Number(state.currentData.answer);
+
+			const isCorrect =
+				Number(state.pickedNumber) ===
+				correctAnswer;
+
+			state.phase = "review";
+			state.answeredCount++;
+
+			lockNumpad();
+
+			ui.btnCheck.classList.add("hidden");
+
+			ui.btnContinue.classList.remove(
+				"hidden"
+			);
+
+			ui.btnContinue.textContent = "NEXT";
+
+			const answerDisplay =
+				getAnswerDisplay();
+
+			if (isCorrect) {
+				state.score++;
+
+				ui.dialog.textContent =
+					"Betul! Syabas!";
+
+				ui.dialog.style.color = "#22a000";
+
+				answerDisplay.style.color =
+					"#22a000";
+			} else {
+				ui.dialog.textContent =
+					`Salah. Jawapannya ialah ${correctAnswer}.`;
+
+				ui.dialog.style.color = "#e53935";
+
+				answerDisplay.style.color =
+					"#e53935";
+
+				answerDisplay.textContent =
+					correctAnswer;
+			}
+
+			updateQuizStatus();
+		}
+
+		// =====================================
+		// NEXT
+		// =====================================
+
+		function handleContinue() {
+			if (state.phase !== "review") {
+				return;
+			}
+
+			startQuestion();
+		}
+
+		// =====================================
+		// SOALAN BAHARU
+		// =====================================
+
+		function startQuestion() {
+			state.currentData = getNextQuestion();
+
+			state.questionNumber++;
+			state.inputValue = "";
+			state.pickedNumber = null;
+			state.phase = "answering";
+
+			renderEquation(state.currentData);
+
+			ui.dialog.textContent =
+				state.currentData.text;
+
+			ui.dialog.style.color = "";
+
+			updateQuizStatus();
+
+			ui.btnCheck.classList.remove("hidden");
+
+			ui.btnContinue.classList.add("hidden");
+
+			ui.btnCheck.disabled = true;
+			ui.btnContinue.textContent = "NEXT";
+
+			unlockNumpad();
+			updateAnswerDisplay();
+		}
+
+		// =====================================
+		// GIVE UP / RESULT
+		// =====================================
+
+		function showResult() {
+			if (state.phase === "complete") {
+				return;
+			}
+
+			state.phase = "complete";
+
+			lockNumpad();
+
+			const totalAnswered =
+				state.answeredCount;
+
+			const percentage =
+				totalAnswered === 0
+					? 0
+					: Math.round(
+						(
+							state.score /
+							totalAnswered
+						) * 100
+					);
+
+			ui.textBar.textContent = "Kuiz Tamat";
+
+			ui.dialog.textContent =
+				"Kuiz telah ditamatkan.";
+
+			ui.dialog.style.color = "";
+
+			ui.btnGiveUp?.classList.add("hidden");
+
+			ui.contentContainer.innerHTML = `
+			<div class="output">
+				<div class="quizResult">
+					<h1>Keputusan</h1>
+
+					<h2>
+						Skor:
+						${state.score}/${totalAnswered}
+					</h2>
+
+					<p>
+						Soalan dijawab:
+						${totalAnswered}
+					</p>
+
+					<h2>${percentage}%</h2>
+
+					<button
+						type="button"
+						class="soft-box btnRestart"
+					>
+						MAIN SEMULA
+					</button>
+
+					<a
+						href="./index.html"
+						class="soft-box"
+					>
+						KELUAR
+					</a>
+				</div>
+			</div>
+		`;
+
+			document
+				.querySelector(".btnRestart")
+				.addEventListener("click", () => {
+					window.location.reload();
+				});
+		}
+
+		function handleGiveUp(event) {
+			event.preventDefault();
+			showResult();
+		}
+
+		// =====================================
+		// EVENT LISTENER
+		// =====================================
+
+		ui.numpads.forEach(button => {
+			button.addEventListener(
+				"click",
+				handleNumpad
+			);
+		});
+
+		ui.btnDel.addEventListener(
+			"click",
+			handleDelete
+		);
+
+		ui.btnCheck.addEventListener(
+			"click",
+			handleCheck
+		);
+
+		ui.btnContinue.addEventListener(
+			"click",
+			handleContinue
+		);
+
+		ui.btnGiveUp?.addEventListener(
+			"click",
+			handleGiveUp
+		);
+
+		// =====================================
+		// MULA
+		// =====================================
+
+		startQuestion();
+	</script>
+</body>
+
+</html>

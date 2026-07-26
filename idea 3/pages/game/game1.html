@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+</head>
+
+<body>
+
+
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Questions</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p></p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+
+				</div>
+
+			</section>
+
+			<footer>
+				<div class="textContainer textBetul">
+					<h2 class="hidden">BETUL</h2>
+					<p class="hidden textFooter">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit,
+						quaerat</p>
+				</div>
+				<div class="btnContainer">
+					<button class="btnContinue soft-box hidden">CONTINUE</button>
+					<button class="btnCheck soft-box ">CHECK</button>
+					<!-- <button class="btnBack soft-box">BACK</button> -->
+					<!-- <button class="btnNext soft-box">NEXT</button> -->
+				</div>
+			</footer>
+		</main>
+	</div>
+
+	<script type="module">
+		import { widgetRegistry } from "../../src/js/utils/widgetRegistry.js"
+		import { showWrong, showCorrect, resetContentFooter, showPopUpDone } from "../../src/js/utils/helper.js"
+
+		document.addEventListener("DOMContentLoaded", function () {
+			let json = [
+				{
+					text: "8 boleh dipecahkan kepada 5 dan __",
+					type: "latihanPecah",
+					content: {
+						whole: 8,
+						part: [5, ""]
+					},
+					options: [2, 3, 5],
+					answer: 3,
+				},
+				{
+					text: "3 boleh dipecahkan kepada 2 dan __",
+					type: "latihanPecah",
+					content: {
+						whole: 3,
+						part: [2, ""]
+					},
+					options: [2, 3, 1],
+					answer: 1,
+				},
+				{
+					text: "4 boleh dipecahkan kepada 2 dan __",
+					type: "latihanPecah",
+					content: {
+						whole: 4,
+						part: [2, ""]
+					},
+					options: [2, 3, 1],
+					answer: 2,
+				},
+				{
+					text: "6 boleh dipecahkan kepada 3 dan __",
+					type: "latihanPecah",
+					content: {
+						whole: 6,
+						part: [3, ""]
+					},
+					options: [2, 3, 1],
+					answer: 3,
+				},
+				{
+					text: "9 boleh dipecahkan kepada 2 dan __",
+					type: "latihanPecah",
+					content: {
+						whole: 9,
+						part: [4, ""]
+					},
+					options: [2, 5, 1],
+					answer: 5,
+				},
+			]
+
+			let state = {
+				currentData: null,
+				index: 0,
+				numberPicked: null,
+				isReset: false,
+				question: null,
+				lenghtData: json.length,
+			}
+
+			let ui = {
+				barFill: document.querySelector(".barFill"),
+				btnCheck: document.querySelector(".btnCheck"),
+				btnNext: document.querySelector(".btnNext"),
+				btnContinue: document.querySelector(".btnContinue"),
+				footer: document.querySelector("footer"),
+				textBar: document.querySelector(".text-bar"),
+				textFooter: document.querySelector(".textFooter"),
+			}
+
+			let hanldeCheck = () => {
+				if (state.numberPicked == null || state.isReset == true) return
+				state.isReset = true
+
+				if (state.question.check(state.numberPicked, state.currentData)) {
+
+					showCorrect(ui)
+					state.question?.afterCorrect(state.numberPicked, state.currentData)
+
+				} else {
+					showWrong(ui)
+				}
+			}
+
+			let hanldeContinue = () => {
+
+				resetContentFooter(ui)
+
+				if (state.numberPicked == state.currentData.answer) {
+					ui.barFill.style.width = `${(state.index / state.lenghtData) * 100}%`
+					ui.textBar.textContent = `${state.index + 1}/${json.length} Questions`;
+
+					main()
+				} else {
+					document.querySelectorAll(".btnAns").forEach(btn => btn.classList.remove("higlight"))
+				}
+
+				state.numberPicked = null;
+				state.isReset = false
+			}
+
+			let main = (data = json[state.index++]) => {
+				if (state.index >= state.lenghtData + 1) {
+					showPopUpDone()
+					return
+				}
+
+				state.currentData = data
+				state.question = widgetRegistry[state.currentData.type];
+
+				let dialog = document.createElement("div");
+				dialog.className = "output";
+
+				let contentContainer = document.querySelector(".contentContainer")
+
+				contentContainer.innerHTML = ""
+				dialog.innerHTML = state.question.render(data);
+				contentContainer.appendChild(dialog);
+
+				state.question.setup(value => state.numberPicked = value, () => !state.isReset);
+				document.querySelector(".dialog p").textContent = state.currentData.text
+			}
+
+			main()
+
+			ui.btnCheck.addEventListener("click", hanldeCheck)
+			ui.btnContinue.addEventListener("click", hanldeContinue)
+
+		})
+	</script>
+
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+</head>
+
+<body>
+
+
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Slide</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p></p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+
+				</div>
+
+			</section>
+
+			<footer>
+				<div class="textContainer textBetul">
+					<h2 class="hidden">BETUL</h2>
+					<p class="hidden">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit, quaerat</p>
+				</div>
+				<div class="btnContainer grid-2">
+					<!-- <button class="btnContinue soft-box hidden">CONTINUE</button> -->
+					<!-- <button class="btnCheck soft-box ">CHECK</button> -->
+					<button class="btnBack soft-box">BACK</button>
+					<button class="btnNext soft-box">NEXT</button>
+				</div>
+			</footer>
+		</main>
+	</div>
+
+	<script type="module">
+
+		import { widgetRegistry } from "../../src/js/utils/widgetRegistry.js"
+		import { showPopUpDone } from "../../src/js/utils/helper.js"
+
+		let json = [
+			{
+				id: 1,
+				type: "text",
+				text: "Mari belajar Friends of 10."
+			},
+			{
+				id: 2,
+				type: "text",
+				text: "Friends of 10 ialah dua nombor yang apabila digabungkan akan menghasilkan jumlah 10."
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "Contoh 1, 8 perlukan berapa lagi untuk jadi 10?",
+				content: {
+					nombor: 8,
+					pelengkap: 2,
+					showAnswer: false
+				},
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "8 perlukan 2 lagi untuk jadi 10.",
+				content: {
+					nombor: 8,
+					pelengkap: 2,
+					showAnswer: true
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "Contoh 2, 7 perlukan berapa lagi untuk jadi 10?",
+				content: {
+					nombor: 7,
+					pelengkap: 3,
+					showAnswer: false
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "7 perlukan 3 lagi untuk jadi 10",
+				content: {
+					nombor: 7,
+					pelengkap: 3,
+					showAnswer: true
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "Contoh 3, 5 perlukan berapa lagi untuk jadi 10?",
+				content: {
+					nombor: 5,
+					pelengkap: 5,
+					showAnswer: false
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "5 perlukan 5 lagi untuk jadi 10.",
+				content: {
+					nombor: 5,
+					pelengkap: 5,
+					showAnswer: true
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "Contoh 4, 9 perlukan berapa lagi untuk jadi 10?",
+				content: {
+					nombor: 9,
+					pelengkap: 1,
+					showAnswer: false
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "9 perlukan 1 lagi untuk jadi 10.",
+				content: {
+					nombor: 9,
+					pelengkap: 1,
+					showAnswer: true
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "Contoh 5, 10 perlukan berapa lagi untuk jadi 10?",
+				content: {
+					nombor: 10,
+					pelengkap: 0,
+					showAnswer: false
+				}
+			},
+			{
+				type: "LearnDiagramBox",
+				text: "10 perlukan 0 lagi untuk jadi 10.",
+				content: {
+					nombor: 10,
+					pelengkap: 0,
+					showAnswer: true
+				}
+			},
+			{
+				id: 7,
+				type: "list",
+				text: "Inilah semua pasangan Friends of 10",
+				content: {
+					items: ["1 + 9 = 10",
+						"2 + 8 = 10",
+						"3 + 7 = 10",
+						"4 + 6 = 10",
+						"5 + 5 = 10",]
+				}
+			}
+		]
+
+
+		let ui = {
+			nextBtn: document.querySelector(".btnNext"),
+			backBtn: document.querySelector(".btnBack"),
+			barFill: document.querySelector(".barFill"),
+			textBar: document.querySelector(".text-bar")
+		}
+		let state = {
+			index: 0,
+			lenghtDialog: json.length,
+			question: null,
+			currentData: null
+		}
+		// let clickSound = new Audio("../../sounds/click.wav");
+		// clickSound.play();
+		// speak(data.text)
+
+		ui.nextBtn.addEventListener("click", () => addDialog(1))
+		ui.backBtn.addEventListener("click", () => addDialog(-1))
+
+		function addDialog(idx) {
+
+			state.index += idx
+
+			if (state.index < 0) {
+				state.index = 0;
+				return;
+			}
+			ui.barFill.style.width = `${(state.index / state.lenghtDialog) * 100}%`
+			ui.textBar.textContent = `${state.index + 1}/${state.lenghtDialog + 1} Slide`
+
+			if (state.index >= state.lenghtDialog) {
+				showPopUpDone()
+				return;
+			}
+
+			let data = json[state.index]
+
+			state.currentData = data
+
+			if (state.currentData.type != "text") {
+				let contentContainer = document.querySelector(".contentContainer")
+				contentContainer.innerHTML = ""
+
+				const dialog = document.createElement("div");
+				dialog.className = "output";
+
+				state.question = widgetRegistry[state.currentData.type];
+
+				if (state.question) {
+					dialog.innerHTML = state.question.render(data);
+					contentContainer.appendChild(dialog);
+					state.question?.setup();
+				}
+
+				document.querySelector(".dialog p").textContent = state.currentData.text
+
+			} else {
+				let contentContainer = document.querySelector(".contentContainer");
+				contentContainer.innerHTML = "";
+				document.querySelector(".dialog p").textContent = state.currentData.text
+			}
+
+		}
+		addDialog(0)
+	</script>
+
+</body>
+
+</html>

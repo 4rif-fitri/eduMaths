@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+</head>
+
+<body>
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Slide</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p></p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+					<div class="content grid-3">
+						<h1 class="eqn text-center">7</h1>
+						<h1 class="text-center">+</h1>
+						<h1 class="eqn text-center">5</h1>
+					</div>
+
+
+				</div>
+
+			</section>
+
+			<footer class="">
+				<div class="textContainer textBetul">
+					<h2 class="hidden">BETUL</h2>
+					<p class="hidden">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit, quaerat</p>
+				</div>
+				<div class="btnContainer grid-2">
+					<!-- <button class="btnContinue soft-box hidden">CONTINUE</button> -->
+					<!-- <button class="btnCheck soft-box ">CHECK</button> -->
+					<button class="btnBack soft-box">BACK</button>
+					<button class="btnNext soft-box">NEXT</button>
+				</div>
+			</footer>
+		</main>
+	</div>
+
+	<script type="module">
+
+		import { widgetRegistry } from "../../src/js/utils/widgetRegistry.js"
+		import { showPopUpDone } from "../../src/js/utils/helper.js"
+
+		let ori = [
+			{
+				text: "Teknik pelengkap 10",
+				type: "teknikPelengkap10",
+				content: {
+					options: [8, 5]
+				}
+			},
+			{
+				text: "Teknik pelengkap 10",
+				type: "teknikPelengkap10",
+				content: {
+					options: [9, 5]
+				}
+			}
+		]
+
+		function generateJson(data) {
+			const [a, b] = data.content.options;
+
+			const besar = Math.max(a, b);
+			const kecil = Math.min(a, b);
+
+			const pelengkap = 10 - besar;
+			const baki = kecil - pelengkap;
+			const jumlah = besar + kecil;
+
+			return [
+				{
+					text: "Mari belajar teknik pelengkap 10 step by step",
+					type: "text",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: "Pilih nombor paling besar",
+					type: "LearnPick",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: `${besar} perlukan ${pelengkap} untuk jadi 10`,
+					type: "LearnNeeded",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: `${pelengkap} itu kita akan ambil dari ${kecil}`,
+					type: "LearnPecah",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: `${kecil} akan dipecahkan kepada ${pelengkap} dan ${kecil - pelengkap}`,
+					type: "LearnBaki",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: `${besar} tambah ${pelengkap} akan dapat 10`,
+					type: "LearnGabung",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: `10 tambah ${baki} akan dapat `,
+					type: "LearnSum",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				},
+				{
+					text: `${besar} tambah ${kecil} akan dapat ${jumlah}`,
+					type: "LearnSummery",
+					content: {
+						nums: [besar, kecil],
+						pelengkap,
+						baki,
+						jumlah
+					},
+				}
+			];
+		}
+
+		let json = [];
+
+		let state = {
+			stepIndex: 0,
+			stepLenght: 0,
+			questionIndex: 0,
+			questionLenght: 0,
+			numberPicked: null,
+			elementPicked: null,
+			currentData: null,
+			isReset: false,
+			question: null,
+			indexProgress: 0,
+			lenghtProgress: 0,
+		}
+
+		let ui = {
+			barFill: document.querySelector(".barFill"),
+			btnNext: document.querySelector(".btnNext"),
+			btnBack: document.querySelector(".btnBack"),
+
+			textBar: document.querySelector(".text-bar"),
+			dialogText: document.querySelector(".dialog p"),
+			contentContainer: document.querySelector(".contentContainer"),
+		}
+
+		function loadQuestion() {
+			const currentQuestion = ori[state.questionIndex];
+
+			if (!currentQuestion) {
+				console.error("Soalan asal tidak dijumpai");
+				return;
+			}
+
+			json = generateJson(currentQuestion);
+			state.stepIndex = 0;
+
+			renderStep();
+		}
+
+		function renderStep() {
+			const data = json[state.stepIndex];
+
+			if (!data) {
+				console.error("Step tidak dijumpai:", state.stepIndex);
+				return;
+			}
+
+			state.currentData = data;
+
+			ui.dialogText.textContent = data.text;
+			ui.contentContainer.innerHTML = "";
+
+			ui.textBar.textContent = `${state.stepIndex + 1}/${json.length} Slide`;
+
+			ui.barFill.style.width = `${((state.stepIndex + 1) / json.length) * 100}%`;
+
+			state.question = widgetRegistry[data.type];
+
+			if (!state.question) {
+				console.error(
+					`Widget "${data.type}" tidak dijumpai`
+				);
+				return;
+			}
+
+			if (typeof state.question.render !== "function") {
+				console.error(
+					`Widget "${data.type}" tiada render()`
+				);
+				return;
+			}
+
+			const output = document.createElement("div");
+			output.className = "output";
+			output.innerHTML = state.question.render(data);
+
+			ui.contentContainer.appendChild(output);
+
+			updateButtons();
+		}
+
+		function nextStep() {
+			if (state.stepIndex < json.length - 1) {
+				state.stepIndex++;
+				renderStep();
+				return;
+			}
+
+			if (state.questionIndex < ori.length - 1) {
+				state.questionIndex++;
+				loadQuestion();
+				return;
+			}
+
+			showPopUpDone();
+		}
+
+		function previousStep() {
+			if (state.stepIndex > 0) {
+				state.stepIndex--;
+				renderStep();
+				return;
+			}
+
+			if (state.questionIndex > 0) {
+				state.questionIndex--;
+				json = generateJson(ori[state.questionIndex]);
+				state.stepIndex = json.length - 1;
+				renderStep();
+			}
+		}
+
+		function updateButtons() {
+			const firstSlide =
+				state.questionIndex === 0 &&
+				state.stepIndex === 0;
+
+			const lastSlide =
+				state.questionIndex === ori.length - 1 &&
+				state.stepIndex === json.length - 1;
+
+			ui.btnBack.disabled = firstSlide;
+			ui.btnNext.textContent = lastSlide ? "FINISH" : "NEXT";
+		}
+
+		ui.btnNext.addEventListener("click", nextStep);
+		ui.btnBack.addEventListener("click", previousStep);
+
+		loadQuestion();
+	</script>
+</body>
+
+</html>

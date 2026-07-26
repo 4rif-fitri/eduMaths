@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="../../src/style/lesson.css">
+</head>
+
+<body>
+
+
+	<div class="container">
+		<main>
+			<header>
+
+				<div>
+					<a href="./index.html">
+						<p class="x">x</p>
+					</a>
+					<div class="barContainer">
+						<p class="text-bar">1/10 Slide</p>
+						<div class="bar">
+							<div class="barFill"></div>
+						</div>
+					</div>
+				</div>
+
+			</header>
+
+			<section id="main">
+
+				<div class="dialogContainer">
+					<div class="icon"></div>
+					<div class="dialog">
+						<p></p>
+					</div>
+				</div>
+
+				<div class="contentContainer">
+
+
+				</div>
+
+			</section>
+
+			<footer>
+				<div class="textContainer textBetul">
+					<h2 class="hidden">BETUL</h2>
+					<p class="hidden">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fugit, quaerat</p>
+				</div>
+				<div class="btnContainer grid-2">
+					<!-- <button class="btnContinue soft-box hidden">CONTINUE</button> -->
+					<!-- <button class="btnCheck soft-box ">CHECK</button> -->
+					<button class="btnBack soft-box">BACK</button>
+					<button class="btnNext soft-box">NEXT</button>
+				</div>
+			</footer>
+		</main>
+	</div>
+
+	<script type="module">
+
+		import { widgetRegistry } from "../../src/js/utils/widgetRegistry.js"
+		import { showPopUpDone } from "../../src/js/utils/helper.js"
+		let json = [
+			{
+				id: 1,
+				type: "text",
+				text: "Mari belajar Number Bonds!"
+			},
+			{
+				id: 2,
+				type: "text",
+				text: "Number Bonds ialah cara memecahkan satu nombor kepada dua bahagian"
+			},
+			{
+				id: 3,
+				type: "learnKombinasi",
+				text: "Contohnya, nombor 6 boleh dipecahkan kepada 1 dan 5.",
+				content: {
+					whole: 6,
+					part: [1, 5],
+				}
+			},
+			{
+				id: 6,
+				type: "learnKombinasi",
+				text: "Nombor 6 juga boleh dipecahkan kepada 2 dan 4",
+				content: {
+					whole: 6,
+					part: [2, 4],
+				}
+			},
+			{
+				id: 6,
+				type: "learnKombinasi",
+				text: "Nombor 6 juga boleh dipecahkan kepada 3 dan 3",
+				content: {
+					whole: 6,
+					part: [3, 3],
+				}
+			},
+			{
+				id: 4,
+				type: "learnKombinasiTerbalik",
+				text: "Apabila kita gabungkan 1 dan 5, kita akan dapat 6 semula",
+				content: {
+					whole: 6,
+					part: [1, 5],
+				}
+			},
+			{
+				id: 4,
+				type: "learnKombinasiTerbalik",
+				text: "Apabila kita gabungkan 2 dan 4, kita akan dapat 6 semula",
+				content: {
+					whole: 6,
+					part: [2, 4],
+				}
+			},
+			{
+				id: 4,
+				type: "learnKombinasiTerbalik",
+				text: "Apabila kita gabungkan 3 dan 3, kita akan dapat 6 semula",
+				content: {
+					whole: 6,
+					part: [3, 3],
+				}
+			},
+			{
+				id: 7,
+				type: "list",
+				text: "Kesimpulannya, Satu nombor boleh mempunyai banyak kombinasi Number Bonds",
+				content: {
+					items: [
+						"0 + 6 = 6",
+						"1 + 5 = 6",
+						"2 + 4 = 6",
+						"3 + 3 = 6",
+						"4 + 2 = 6",
+						"5 + 1 = 6",
+						"6 + 0 = 6",
+					]
+				}
+			},
+		]
+
+		let ui = {
+			nextBtn: document.querySelector(".btnNext"),
+			backBtn: document.querySelector(".btnBack"),
+			barFill: document.querySelector(".barFill"),
+			textBar: document.querySelector(".text-bar")
+		}
+		let state = {
+			index: 0,
+			lenghtDialog: json.length,
+			question: null,
+			currentData: null
+		}
+		// let clickSound = new Audio("../../sounds/click.wav");
+		// clickSound.play();
+		// speak(data.text)
+
+		ui.nextBtn.addEventListener("click", () => addDialog(1))
+		ui.backBtn.addEventListener("click", () => addDialog(-1))
+
+		function addDialog(idx) {
+
+			state.index += idx
+
+			if (state.index < 0) {
+				state.index = 0;
+				return;
+			}
+			ui.barFill.style.width = `${(state.index / state.lenghtDialog) * 100}%`
+			ui.textBar.textContent = `${state.index+1}/${state.lenghtDialog+1} Slide`
+
+			if (state.index >= state.lenghtDialog) {
+				showPopUpDone()
+				return;
+			}
+
+			let data = json[state.index]
+
+			state.currentData = data
+
+			if (state.currentData.type != "text") {
+				let contentContainer = document.querySelector(".contentContainer")
+				contentContainer.innerHTML = ""
+
+				const dialog = document.createElement("div");
+				dialog.className = "output";
+
+				state.question = widgetRegistry[state.currentData.type];
+
+				if (state.question) {
+					dialog.innerHTML = state.question.render(data);
+					contentContainer.appendChild(dialog);
+					state.question?.setup();
+				}
+
+				document.querySelector(".dialog p").textContent = state.currentData.text
+
+			} else {
+				let contentContainer = document.querySelector(".contentContainer");
+				contentContainer.innerHTML = "";
+				document.querySelector(".dialog p").textContent = state.currentData.text
+			}
+
+		}
+		addDialog(0)
+	</script>
+
+</body>
+
+</html>
