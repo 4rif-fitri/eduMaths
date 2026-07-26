@@ -247,25 +247,12 @@
 			}
 		];
 
-
-		// =====================================
-		// 2. STATE INDEX SAHAJA
-		// =====================================
-
 		const state = {
 			index: 0,
-
 			phase: "rendering",
-
 			currentResult: null,
-
 			cleanup: null
 		};
-
-
-		// =====================================
-		// 3. UI
-		// =====================================
 
 		const ui = {
 			contentContainer:
@@ -367,29 +354,20 @@
 			state.cleanup = null;
 			state.currentResult = null;
 
-			const currentData =
-				json[state.index];
+			let currentData = json[state.index];
 
 			if (!currentData) {
 				finishAllComponents();
 				return;
 			}
 
-			const component =
-				widgetRegistry[currentData.type];
+			let component = widgetRegistry[currentData.type];
 
 			if (!component) {
 				console.error(
 					`Component "${currentData.type}" ` +
 					`tidak dijumpai.`
 				);
-
-				showMessage(
-					`Component "${currentData.type}" ` +
-					`tidak dijumpai.`,
-					"wrong"
-				);
-
 				return;
 			}
 
@@ -398,13 +376,6 @@
 					`Component "${currentData.type}" ` +
 					`tiada fungsi mount().`
 				);
-
-				showMessage(
-					`Component "${currentData.type}" ` +
-					`tidak boleh dimulakan.`,
-					"wrong"
-				);
-
 				return;
 			}
 
@@ -415,34 +386,17 @@
 
 			showMessage(currentData.text);
 
-			/*
-				Index hanya sediakan root kosong.
-				Component akan render dirinya sendiri.
-			*/
-
-			const root =
-				document.createElement("div");
-
-			root.className = "output w-100";
-
-			ui.contentContainer.replaceChildren(
-				root
-			);
-
-			/*
-				Mount component berdasarkan type.
-			*/
+			let div = document.createElement("div");
+			div.className = "output w-100";
+			ui.contentContainer.replaceChildren(div);
 
 			state.cleanup = component.mount({
-				root,
-
+				div,
 				data: currentData,
-
 				ui: {
 					showMessage,
 					updateSubProgress
 				},
-
 				complete: handleComponentComplete
 			});
 		}
@@ -507,10 +461,7 @@
 			state.cleanup = null;
 			state.phase = "complete";
 
-			showMessage(
-				"Semua aktiviti telah selesai!",
-				"correct"
-			);
+			showMessage("Semua aktiviti telah selesai!","correct");
 
 			ui.contentContainer.innerHTML = `
 				<div class="output">

@@ -1,8 +1,8 @@
 function shuffle(data) {
-	const result = [...data];
+	let result = [...data];
 
 	for (let i = result.length - 1; i > 0; i--) {
-		const randomIndex = Math.floor(
+		let randomIndex = Math.floor(
 			Math.random() * (i + 1)
 		);
 
@@ -16,8 +16,8 @@ function shuffle(data) {
 }
 
 function renderPadankan(data) {
-	const items = data.content.items;
-	const shuffledAnswers = shuffle(items);
+	let items = data.content.items;
+	let shuffledAnswers = shuffle(items);
 
 	return `
 		<div class="grid-2 w-100 gap-3 p-2 padankan-game">
@@ -61,18 +61,9 @@ function renderPadankan(data) {
 	`;
 }
 
-export function mountPadankan({
-	root,
-	data,
-	ui,
-	complete
-}) {
-	/*
-		State ini milik component Padankan.
-		Index langsung tidak perlu tahu.
-	*/
+export function mountPadankan({div,data,ui,complete}) {
 
-	const state = {
+	let state = {
 		selectedQuestion: null,
 		selectedAnswer: null,
 		matchedPairs: 0,
@@ -82,10 +73,10 @@ export function mountPadankan({
 		timeoutId: null
 	};
 
-	const items = data.content.items;
-	const totalPairs = items.length;
+	let items = data.content.items;
+	let totalPairs = items.length;
 
-	root.innerHTML = renderPadankan(data);
+	div.innerHTML = renderPadankan(data);
 
 	ui.showMessage(data.text);
 	ui.updateSubProgress(0, totalPairs, 0);
@@ -129,8 +120,8 @@ export function mountPadankan({
 	}
 
 	function checkPair() {
-		const question = state.selectedQuestion;
-		const answer = state.selectedAnswer;
+		let question = state.selectedQuestion;
+		let answer = state.selectedAnswer;
 
 		if (!question || !answer) return;
 		if (state.isLocked) return;
@@ -138,11 +129,11 @@ export function mountPadankan({
 		state.isLocked = true;
 		state.attempts++;
 
-		const correctAnswer = Number(
+		let correctAnswer = Number(
 			question.dataset.answer
 		);
 
-		const selectedAnswer = Number(
+		let selectedAnswer = Number(
 			answer.dataset.value
 		);
 
@@ -248,15 +239,15 @@ export function mountPadankan({
 			return;
 		}
 
-		const question =
+		let question =
 			event.target.closest(".boxSoalan");
 
-		const answer =
+		let answer =
 			event.target.closest(".boxJawapan");
 
 		if (
 			question &&
-			root.contains(question) &&
+			div.contains(question) &&
 			!question.disabled
 		) {
 			selectQuestion(question);
@@ -265,14 +256,14 @@ export function mountPadankan({
 
 		if (
 			answer &&
-			root.contains(answer) &&
+			div.contains(answer) &&
 			!answer.disabled
 		) {
 			selectAnswer(answer);
 		}
 	}
 
-	root.addEventListener("click", handleClick);
+	div.addEventListener("click", handleClick);
 
 	/*
 		Dipanggil oleh index sebelum component
@@ -280,7 +271,7 @@ export function mountPadankan({
 	*/
 
 	return function cleanup() {
-		root.removeEventListener(
+		div.removeEventListener(
 			"click",
 			handleClick
 		);
