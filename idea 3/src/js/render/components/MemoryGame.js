@@ -1,8 +1,8 @@
 function shuffle(data) {
-	let result = [...data];
+	const result = [...data];
 
 	for (let i = result.length - 1; i > 0; i--) {
-		let randomIndex = Math.floor(
+		const randomIndex = Math.floor(
 			Math.random() * (i + 1)
 		);
 
@@ -15,33 +15,50 @@ function shuffle(data) {
 	return result;
 }
 
-function createDeck(pairs) {
-	let deck = pairs.flatMap(pair => {
-		return pair.values.map(
-			(value, cardIndex) => ({
-				cardId:
-					`${pair.pairId}-${cardIndex}`,
+function createDeck(items) {
+	const deck = items.flatMap(
+		(item, index) => {
+			const pairId = `pair-${index}`;
 
-				pairId: pair.pairId,
+			return [
+				{
+					cardId:
+						`${pairId}-question`,
 
-				value
-			})
-		);
-	});
+					pairId,
+
+					value:
+						item.content.question
+				},
+				{
+					cardId:
+						`${pairId}-answer`,
+
+					pairId,
+
+					value:
+						item.answer
+				}
+			];
+		}
+	);
 
 	return shuffle(deck);
 }
 
 function renderMemoryGame(data) {
-	let pairs = data.content.pairs;
+	const items =
+		data.content.items;
 
-	let cardIcon =
+	const cardIcon =
 		data.content.cardIcon ?? "📗";
 
-	let deck = createDeck(pairs);
+	const deck =
+		createDeck(items);
 
 	return `
 		<div class="memory-container grid-4">
+
 			${deck.map(card => `
 				<button
 					type="button"
@@ -62,12 +79,18 @@ function renderMemoryGame(data) {
 					</div>
 				</button>
 			`).join("")}
+
 		</div>
 	`;
 }
 
-export function mountMemoryGame({root,data,ui,complete}) {
-	let state = {
+export function mountMemoryGame({
+	root,
+	data,
+	ui,
+	complete
+}) {
+	const state = {
 		firstCard: null,
 		secondCard: null,
 
@@ -80,28 +103,54 @@ export function mountMemoryGame({root,data,ui,complete}) {
 		timeoutId: null
 	};
 
-	let totalPairs = data.content.pairs.length;
+	const items =
+		data.content.items;
 
-	root.innerHTML = renderMemoryGame(data);
+	const totalPairs =
+		items.length;
+
+	// Render component
+	root.innerHTML =
+		renderMemoryGame(data);
 
 	ui.showMessage(data.text);
 
-	ui.updateSubProgress(0,totalPairs,0);
+	ui.updateSubProgress(
+		0,
+		totalPairs,
+		0
+	);
 
 	function flipCard(card) {
-		card.classList.add("flip","flipped");
+		card.classList.add(
+			"flip",
+			"flipped"
+		);
 
-		let innerCard = card.querySelector(".innerCard");
+		const innerCard =
+			card.querySelector(
+				".innerCard"
+			);
 
-		innerCard.style.transform = "rotateY(180deg)";
+		innerCard.style.transform =
+			"rotateY(180deg)";
 	}
 
 	function unflipCard(card) {
-		card.classList.remove("flip","flipped");
+		if (!card) return;
 
-		let innerCard = card.querySelector(".innerCard");
+		card.classList.remove(
+			"flip",
+			"flipped"
+		);
 
-		innerCard.style.transform = "rotateY(0deg)";
+		const innerCard =
+			card.querySelector(
+				".innerCard"
+			);
+
+		innerCard.style.transform =
+			"rotateY(0deg)";
 	}
 
 	function resetTurn() {
@@ -110,27 +159,51 @@ export function mountMemoryGame({root,data,ui,complete}) {
 		state.isLocked = false;
 	}
 
-	function handleCorrectPair(firstCard,secondCard) {
-		firstCard.classList.add("matched");
-		secondCard.classList.add("matched");
+	function handleCorrectPair(
+		firstCard,
+		secondCard
+	) {
+		firstCard.classList.add(
+			"matched"
+		);
+
+		secondCard.classList.add(
+			"matched"
+		);
 
 		firstCard.disabled = true;
 		secondCard.disabled = true;
 
 		state.matchedPairs++;
 
-		ui.showMessage("Betul! Pasangan yang sama ditemui.","correct");
-		ui.updateSubProgress(state.matchedPairs,totalPairs,state.attempts);
+		ui.showMessage(
+			"Betul! Pasangan yang sama ditemui.",
+			"correct"
+		);
+
+		ui.updateSubProgress(
+			state.matchedPairs,
+			totalPairs,
+			state.attempts
+		);
 
 		resetTurn();
 
-		if (state.matchedPairs === totalPairs) {
+		if (
+			state.matchedPairs === totalPairs
+		) {
 			finishComponent();
 		}
 	}
 
-	function handleWrongPair(firstCard,secondCard) {
-		ui.showMessage("Bukan pasangan yang sama. Cuba lagi!","wrong");
+	function handleWrongPair(
+		firstCard,
+		secondCard
+	) {
+		ui.showMessage(
+			"Bukan pasangan yang sama. Cuba lagi!",
+			"wrong"
+		);
 
 		state.timeoutId = setTimeout(() => {
 			unflipCard(firstCard);
@@ -146,23 +219,47 @@ export function mountMemoryGame({root,data,ui,complete}) {
 		state.attempts++;
 		state.isLocked = true;
 
-		let firstCard =state.firstCard;
-		let secondCard = state.secondCard;
-		let firstPairId = firstCard.dataset.pairId;
-		let secondPairId = secondCard.dataset.pairId;
-		let isSamePair = firstPairId === secondPairId;
+		/*
+			Simpan reference sekarang supaya tidak
+			hilang semasa setTimeout berjalan.
+		*/
 
-		ui.updateSubProgress(state.matchedPairs,totalPairs,state.attempts);
+		const firstCard =
+			state.firstCard;
+
+		const secondCard =
+			state.secondCard;
+
+		const firstPairId =
+			firstCard.dataset.pairId;
+
+		const secondPairId =
+			secondCard.dataset.pairId;
+
+		const isSamePair =
+			firstPairId === secondPairId;
+
+		ui.updateSubProgress(
+			state.matchedPairs,
+			totalPairs,
+			state.attempts
+		);
 
 		if (isSamePair) {
 			state.timeoutId = setTimeout(() => {
-				handleCorrectPair(firstCard,secondCard);
+				handleCorrectPair(
+					firstCard,
+					secondCard
+				);
 			}, 400);
 
 			return;
 		}
 
-		handleWrongPair(firstCard,secondCard);
+		handleWrongPair(
+			firstCard,
+			secondCard
+		);
 	}
 
 	function handleCardClick(event) {
@@ -173,10 +270,13 @@ export function mountMemoryGame({root,data,ui,complete}) {
 			return;
 		}
 
-		let card =
+		const card =
 			event.target.closest(".card");
 
-		if (!card || !root.contains(card)) {
+		if (
+			!card ||
+			!root.contains(card)
+		) {
 			return;
 		}
 
@@ -225,16 +325,10 @@ export function mountMemoryGame({root,data,ui,complete}) {
 			"correct"
 		);
 
-		/*
-			MemoryGame hanya laporkan selesai.
-
-			Index akan:
-			- paparkan CONTINUE
-			- tambah index
-			- render component seterusnya
-		*/
-
 		complete({
+			id: data.id,
+			type: data.type,
+
 			matchedPairs:
 				state.matchedPairs,
 
@@ -249,11 +343,6 @@ export function mountMemoryGame({root,data,ui,complete}) {
 		"click",
 		handleCardClick
 	);
-
-	/*
-		Dipanggil oleh index sebelum component
-		seterusnya dirender.
-	*/
 
 	return function cleanup() {
 		root.removeEventListener(

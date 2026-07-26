@@ -1,7 +1,7 @@
 import { shuffle } from "../../utils/helper.js";
 import { renderPadankan } from "../../render/Padankan.js"
 
-export function mountPadankan({div,data,ui,complete}) {
+export function mountPadankan({root,data,ui,complete}) {
 
 	let state = {
 		selectedQuestion: null,
@@ -16,7 +16,7 @@ export function mountPadankan({div,data,ui,complete}) {
 	let items = data.content.items;
 	let totalPairs = items.length;
 
-	div.innerHTML = renderPadankan(data);
+	root.innerHTML = renderPadankan(data);
 
 	ui.showMessage(data.text);
 	ui.updateSubProgress(0, totalPairs, 0);
@@ -147,20 +147,20 @@ export function mountPadankan({div,data,ui,complete}) {
 
 		let answer = event.target.closest(".boxJawapan");
 
-		if (question && div.contains(question) && !question.disabled) {
+		if (question && root.contains(question) && !question.disabled) {
 			selectQuestion(question);
 			return;
 		}
 
-		if (answer && div.contains(answer) && !answer.disabled) {
+		if (answer && root.contains(answer) && !answer.disabled) {
 			selectAnswer(answer);
 		}
 	}
 
-	div.addEventListener("click", handleClick);
+	root.addEventListener("click", handleClick);
 	
 	return function cleanup() {
-		div.removeEventListener("click",handleClick);
+		root.removeEventListener("click",handleClick);
 		clearTimeout(state.timeoutId);
 	};
 }

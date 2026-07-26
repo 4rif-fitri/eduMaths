@@ -1,239 +1,250 @@
 <!DOCTYPE html>
-<html lang="ms">
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8">
-
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+<link rel="stylesheet" href="../../src/style/lesson.css">
 
-	<title>Memory Game</title>
-
-	<link rel="stylesheet" href="../../src/style/lesson.css">
-
-	<link rel="stylesheet" href="../../src/style/game.css">
+<link rel="stylesheet" href="../../src/style/game.css">
 </head>
 
 <body>
-
 	<div class="container">
 		<main>
-
 			<header>
-				<div>
 
+				<div>
 					<a href="./index.html">
 						<p class="x">x</p>
 					</a>
-
 					<div class="barContainer">
-
-						<p class="text-bar">
-							0/8 Pasangan
-						</p>
-
+						<p class="text-bar">1/10 Slide</p>
 						<div class="bar">
 							<div class="barFill"></div>
 						</div>
-
 					</div>
-
 				</div>
+
 			</header>
 
 			<section id="main">
 
 				<div class="dialogContainer">
-
 					<div class="icon"></div>
-
 					<div class="dialog">
-						<p>
-							Tekan dua kad untuk mencari
-							pasangan yang sama.
-						</p>
+						<p></p>
 					</div>
-
 				</div>
 
 				<div class="contentContainer">
 
-					<div class="output">
-
-						<!-- Kad dijana daripada JSON -->
-						<div class="memory-container grid-4"></div>
-
-					</div>
 
 				</div>
 
 			</section>
 
 			<footer>
-
 				<div class="textContainer textBetul">
 					<h2 class="hidden"></h2>
 					<p class="hidden"></p>
 				</div>
-
 				<div class="btnContainer">
-
-					<button type="button" class="btnContinue soft-box hidden">
-						MAIN SEMULA
-					</button>
-
-					<button type="button" class="btnCheck soft-box hidden">
-						CHECK
-					</button>
-
+					<button class="btnContinue soft-box hidden">CONTINUE</button>
+					<button class="btnCheck soft-box">CHECK</button>
 				</div>
-
 			</footer>
-
 		</main>
 	</div>
 
 	<script type="module">
 
+		import {
+			widgetRegistry
+		} from "../../src/js/utils/widgetRegistry.js";
+
+		import {
+			showMessagee
+		} from "../../src/js/utils/helper.js";
+
+
+		// =====================================
+		// 1. ARRAY COMPONENT
+		// =====================================
+
 		const json = [
+			// {
+			// 	id: "memory-game-1",
+
+			// 	text:
+			// 		"Tekan dua kad untuk mencari pasangan operasi dan jawapan.",
+
+			// 	type: "MemoryGame",
+
+			// 	content: {
+			// 		cardIcon: "📗",
+
+			// 		items: [
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "1 + 1"
+			// 				},
+
+			// 				answer: 2
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "1 + 2"
+			// 				},
+
+			// 				answer: 3
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "1 + 3"
+			// 				},
+
+			// 				answer: 4
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "2 + 3"
+			// 				},
+
+			// 				answer: 5
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "2 + 4"
+			// 				},
+
+			// 				answer: 6
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "3 + 4"
+			// 				},
+
+			// 				answer: 7
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "3 + 5"
+			// 				},
+
+			// 				answer: 8
+			// 			},
+			// 			{
+			// 				text:
+			// 					"Cari pasangan yang sama",
+
+			// 				type: "MemoryGame",
+
+			// 				content: {
+			// 					question: "4 + 5"
+			// 				},
+
+			// 				answer: 9
+			// 			}
+			// 		]
+			// 	}
+			// },
+
+			/*
+				Selepas MemoryGame selesai,
+				index akan render Padankan.
+			*/
+
 			{
-				id: "memory-game-1",
+				id: "padankan-1",
 
 				text:
-					"Tekan dua kad untuk mencari pasangan operasi dan jawapan.",
+					"Padankan soalan dengan jawapan yang betul.",
 
-				type: "MemoryGame",
+				type: "padankan",
 
 				content: {
-					cardIcon: "📗",
-
 					items: [
 						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
 							content: {
-								question: "1 + 1"
+								question: "5 + 5"
 							},
 
-							answer: 2
+							answer: 10
 						},
 						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
 							content: {
-								question: "1 + 2"
+								question: "5 + 6"
 							},
 
-							answer: 3
+							answer: 11
 						},
 						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
 							content: {
-								question: "1 + 3"
+								question: "5 + 6"
 							},
 
-							answer: 4
+							answer: 11
 						},
 						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
 							content: {
-								question: "2 + 3"
+								question: "5 + 6"
 							},
 
-							answer: 5
-						},
-						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
-							content: {
-								question: "2 + 4"
-							},
-
-							answer: 6
-						},
-						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
-							content: {
-								question: "3 + 4"
-							},
-
-							answer: 7
-						},
-						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
-							content: {
-								question: "3 + 5"
-							},
-
-							answer: 8
-						},
-						{
-							text:
-								"Cari pasangan yang sama",
-
-							type: "MemoryGame",
-
-							content: {
-								question: "4 + 5"
-							},
-
-							answer: 9
+							answer: 11
 						}
 					]
 				}
 			}
 		];
 
-		const currentData = json[0];
-
-		const items =
-			currentData.content.items;
-
-		const totalPairs =
-			items.length;
-
 		const state = {
-			firstCard: null,
-			secondCard: null,
-
-			isLocked: false,
-
-			matchedPairs: 0,
-			attempts: 0,
-
-			phase: "playing",
-
-			timeoutId: null
+			index: 0,
+			phase: "rendering",
+			cleanup: null,
+			currentResult: null
 		};
 
 		const ui = {
-			memoryContainer:
+			contentContainer:
 				document.querySelector(
-					".memory-container"
+					".contentContainer"
 				),
 
 			dialog:
@@ -251,419 +262,136 @@
 					".barFill"
 				),
 
-			btnContinue:
-				document.querySelector(
-					".btnContinue"
-				),
-
 			btnCheck:
 				document.querySelector(
 					".btnCheck"
+				),
+
+			btnContinue:
+				document.querySelector(
+					".btnContinue"
 				)
 		};
 
-		ui.btnCheck.classList.add("hidden");
-
 
 		// =====================================
-		// 5. SHUFFLE
-		// =====================================
-
-		function shuffle(data) {
-			const result = [...data];
-
-			for (
-				let i = result.length - 1;
-				i > 0;
-				i--
-			) {
-				const randomIndex =
-					Math.floor(
-						Math.random() * (i + 1)
-					);
-
-				[
-					result[i],
-					result[randomIndex]
-				] = [
-						result[randomIndex],
-						result[i]
-					];
-			}
-
-			return result;
-		}
-
-
-		// =====================================
-		// 6. BINA DECK DARIPADA JSON
-		// =====================================
-
-		function createDeck() {
-			const deck = items.flatMap(
-				(item, index) => {
-					const pairId =
-						`pair-${index}`;
-
-					return [
-						{
-							cardId:
-								`${pairId}-question`,
-
-							pairId,
-
-							value:
-								item.content.question
-						},
-
-						{
-							cardId:
-								`${pairId}-answer`,
-
-							pairId,
-
-							value:
-								item.answer
-						}
-					];
-				}
-			);
-
-			return shuffle(deck);
-		}
-
-
-		// =====================================
-		// 7. RENDER KAD
-		// =====================================
-
-		function renderCards() {
-			const deck = createDeck();
-
-			const cardIcon =
-				currentData.content.cardIcon ??
-				"📗";
-
-			ui.memoryContainer.innerHTML =
-				deck.map(card => `
-					<div
-						class="card"
-						data-card-id="${card.cardId}"
-						data-pair-id="${card.pairId}"
-					>
-						<div class="innerCard">
-
-							<div class="back">
-								<h3>
-									${card.value}
-								</h3>
-							</div>
-
-							<div class="front">
-								<h1>
-									${cardIcon}
-								</h1>
-							</div>
-
-						</div>
-					</div>
-				`).join("");
-		}
-
-
-		// =====================================
-		// 8. FLIP KAD
-		// =====================================
-
-		function flipCard(card) {
-			card.classList.add(
-				"flip",
-				"flipped"
-			);
-
-			const innerCard =
-				card.querySelector(
-					".innerCard"
-				);
-
-			innerCard.style.transform =
-				"rotateY(180deg)";
-		}
-
-		function unflipCard(card) {
-			if (!card) return;
-
-			card.classList.remove(
-				"flip",
-				"flipped"
-			);
-
-			const innerCard =
-				card.querySelector(
-					".innerCard"
-				);
-
-			innerCard.style.transform =
-				"rotateY(0deg)";
-		}
-
-
-		// =====================================
-		// 9. UPDATE PROGRESS
-		// =====================================
-
-		function updateProgress() {
-			ui.textBar.textContent =
-				`${state.matchedPairs}/` +
-				`${totalPairs} Pasangan | ` +
-				`${state.attempts} Percubaan`;
-
-			const progress =
-				totalPairs === 0
-					? 0
-					: (
-						state.matchedPairs /
-						totalPairs
-					) * 100;
-
-			ui.barFill.style.width =
-				`${progress}%`;
-		}
-
-
-		// =====================================
-		// 10. MESEJ
+		// 4. ADAPTER UI
 		// =====================================
 
 		function showMessage(
 			message,
 			status = "normal"
 		) {
-			ui.dialog.textContent = message;
-
-			ui.dialog.classList.remove(
-				"textBetul",
-				"textSalah"
+			showMessagee(
+				ui,
+				message,
+				status
 			);
-
-			ui.dialog.style.color = "";
-
-			if (status === "correct") {
-				ui.dialog.classList.add(
-					"textBetul"
-				);
-
-				ui.dialog.style.color =
-					"#22a000";
-			}
-
-			if (status === "wrong") {
-				ui.dialog.classList.add(
-					"textSalah"
-				);
-
-				ui.dialog.style.color =
-					"#e53935";
-			}
 		}
 
-
-		// =====================================
-		// 11. RESET TURN
-		// =====================================
-
-		function resetTurn() {
-			state.firstCard = null;
-			state.secondCard = null;
-			state.isLocked = false;
-		}
-
-
-		// =====================================
-		// 12. PASANGAN BETUL
-		// =====================================
-
-		function handleCorrectPair(
-			firstCard,
-			secondCard
+		function updateSubProgress(
+			completed,
+			total,
+			attempts
 		) {
-			state.matchedPairs++;
-
-			firstCard.classList.add(
-				"matched"
-			);
-
-			secondCard.classList.add(
-				"matched"
-			);
-
-			firstCard.style.pointerEvents =
-				"none";
-
-			secondCard.style.pointerEvents =
-				"none";
-
-			showMessage(
-				"Betul! Pasangan yang sama ditemui.",
-				"correct"
-			);
-
-			updateProgress();
-			resetTurn();
-
-			if (
-				state.matchedPairs ===
-				totalPairs
-			) {
-				finishGame();
-			}
-		}
-
-
-		// =====================================
-		// 13. PASANGAN SALAH
-		// =====================================
-
-		function handleWrongPair(
-			firstCard,
-			secondCard
-		) {
-			showMessage(
-				"Bukan pasangan yang sama. Cuba lagi!",
-				"wrong"
-			);
-
-			state.timeoutId =
-				setTimeout(() => {
-					unflipCard(firstCard);
-					unflipCard(secondCard);
-
-					resetTurn();
-
-					showMessage(
-						currentData.text
-					);
-				}, 800);
-		}
-
-
-		// =====================================
-		// 14. SEMAK DUA KAD
-		// =====================================
-
-		function checkCards() {
-			state.attempts++;
-			state.isLocked = true;
-
-			const firstCard =
-				state.firstCard;
-
-			const secondCard =
-				state.secondCard;
-
-			const firstPairId =
-				firstCard.dataset.pairId;
-
-			const secondPairId =
-				secondCard.dataset.pairId;
-
-			const isSamePair =
-				firstPairId === secondPairId;
-
-			updateProgress();
-
-			if (isSamePair) {
-				state.timeoutId =
-					setTimeout(() => {
-						handleCorrectPair(
-							firstCard,
-							secondCard
-						);
-					}, 400);
-
-				return;
-			}
-
-			handleWrongPair(
-				firstCard,
-				secondCard
-			);
-		}
-
-
-		// =====================================
-		// 15. KLIK KAD
-		// =====================================
-
-		function handleCardClick(event) {
-			const card =
-				event.target.closest(".card");
-
-			if (
-				!card ||
-				!ui.memoryContainer.contains(card)
-			) {
-				return;
-			}
-
-			if (
-				state.phase !== "playing" ||
-				state.isLocked
-			) {
-				return;
-			}
-
-			if (
-				card === state.firstCard ||
-				card.classList.contains(
-					"matched"
-				)
-			) {
-				return;
-			}
-
-			flipCard(card);
-
-			if (!state.firstCard) {
-				state.firstCard = card;
-
-				showMessage(
-					"Pilih satu lagi kad."
-				);
-
-				return;
-			}
-
-			state.secondCard = card;
-
-			checkCards();
-		}
-
-
-		// =====================================
-		// 16. TAMAT GAME
-		// =====================================
-
-		function finishGame() {
-			state.phase = "complete";
-			state.isLocked = true;
-
-			ui.barFill.style.width =
-				"100%";
+			const percentage =
+				total === 0
+					? 0
+					: (completed / total) * 100;
 
 			ui.textBar.textContent =
-				`${totalPairs}/${totalPairs} ` +
-				`Pasangan`;
+				`${completed}/${total} Pasangan | ` +
+				`${attempts} Percubaan`;
 
-			showMessage(
-				`Tahniah! Semua pasangan ` +
-				`ditemui dalam ` +
-				`${state.attempts} percubaan.`,
-				"correct"
+			ui.barFill.style.width =
+				`${percentage}%`;
+		}
+
+
+		// =====================================
+		// 5. RENDER COMPONENT
+		// =====================================
+
+		function renderCurrentComponent() {
+			state.cleanup?.();
+
+			state.cleanup = null;
+			state.currentResult = null;
+
+			const currentData =
+				json[state.index];
+
+			if (!currentData) {
+				finishAllComponents();
+				return;
+			}
+
+			const component =
+				widgetRegistry[currentData.type];
+
+			if (!component?.mount) {
+				showMessage(
+					`Component "${currentData.type}" ` +
+					`tidak dijumpai.`,
+					"wrong"
+				);
+
+				return;
+			}
+
+			state.phase = "playing";
+
+			ui.btnCheck.classList.add("hidden");
+			ui.btnContinue.classList.add("hidden");
+
+			const root =
+				document.createElement("div");
+
+			root.className = "output w-100";
+
+			ui.contentContainer.replaceChildren(
+				root
 			);
 
+			console.log(currentData.content);
+
+			state.cleanup = component.mount({
+				root,
+
+				data: currentData,
+
+				ui: {
+					showMessage,
+					updateSubProgress
+				},
+
+				complete:
+					handleComponentComplete
+			});
+		}
+
+
+		// =====================================
+		// 6. COMPONENT SELESAI
+		// =====================================
+
+		function handleComponentComplete(result) {
+			if (state.phase !== "playing") {
+				return;
+			}
+
+			state.phase =
+				"component-complete";
+
+			state.currentResult = result;
+
+			const isLastComponent =
+				state.index === json.length - 1;
+
 			ui.btnContinue.textContent =
-				"MAIN SEMULA";
+				isLastComponent
+					? "FINISH"
+					: "CONTINUE";
 
 			ui.btnContinue.classList.remove(
 				"hidden"
@@ -672,56 +400,76 @@
 
 
 		// =====================================
-		// 17. MULA / RESTART
+		// 7. COMPONENT SETERUSNYA
 		// =====================================
 
-		function startGame() {
-			clearTimeout(state.timeoutId);
+		function handleContinue() {
+			if (
+				state.phase !==
+				"component-complete"
+			) {
+				return;
+			}
 
-			state.firstCard = null;
-			state.secondCard = null;
+			state.index++;
 
-			state.isLocked = false;
-
-			state.matchedPairs = 0;
-			state.attempts = 0;
-
-			state.phase = "playing";
-
-			showMessage(currentData.text);
-
-			ui.btnContinue.classList.add(
-				"hidden"
-			);
-
-			renderCards();
-			updateProgress();
+			renderCurrentComponent();
 		}
 
 
 		// =====================================
-		// 18. EVENT LISTENER
+		// 8. SEMUA SELESAI
 		// =====================================
 
-		ui.memoryContainer.addEventListener(
-			"click",
-			handleCardClick
-		);
+		function finishAllComponents() {
+			state.cleanup?.();
+
+			state.cleanup = null;
+			state.phase = "complete";
+
+			showMessage(
+				"Semua aktiviti telah selesai!",
+				"correct"
+			);
+
+			ui.contentContainer.innerHTML = `
+			<div class="output">
+				<div class="soft-box p-2">
+
+					<h1>Tahniah!</h1>
+
+					<p>
+						Anda telah menyelesaikan
+						semua aktiviti.
+					</p>
+
+				</div>
+			</div>
+		`;
+
+			ui.textBar.textContent =
+				`${json.length}/${json.length} Aktiviti`;
+
+			ui.barFill.style.width = "100%";
+
+			ui.btnCheck.classList.add("hidden");
+			ui.btnContinue.classList.add("hidden");
+
+			localStorage.setItem(
+				"game8Completed",
+				"true"
+			);
+		}
+
 
 		ui.btnContinue.addEventListener(
 			"click",
-			startGame
+			handleContinue
 		);
 
-
-		// =====================================
-		// 19. MULA GAME
-		// =====================================
-
-		startGame();
+		renderCurrentComponent();
 
 	</script>
-
 </body>
 
 </html>
