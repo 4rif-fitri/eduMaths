@@ -31,6 +31,7 @@ import { renderTrueFalse } from "../render/TrueFalse.js"
 import { renderPickPair10, renderSumThree10 } from "../render/ThreeMake10.js";
 import { setupPickPair10, checkPair10 } from "../logic/pickPair10Logic.js";
 import { mountPadankan } from "../render/components/Padankan.js"
+import { mountMemoryGame } from "../render/components/MemoryGame.js"
 
 export let widgetRegistry = {
 
@@ -236,6 +237,8 @@ export let widgetRegistry = {
 	padankan: {
 		mount: mountPadankan
 	},
-
+	MemoryGame: {
+		mount: mountMemoryGame
+	}
 
 }

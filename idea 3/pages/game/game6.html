@@ -1,215 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ms">
 
 <head>
 	<meta charset="UTF-8">
+
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+
+	<title>Memory Game</title>
+
 	<link rel="stylesheet" href="../../src/style/lesson.css">
+
 	<link rel="stylesheet" href="../../src/style/game.css">
 </head>
 
 <body>
+
 	<div class="container">
 		<main>
-			<header>
 
+			<header>
 				<div>
+
 					<a href="./index.html">
 						<p class="x">x</p>
 					</a>
+
 					<div class="barContainer">
-						<p class="text-bar">1/10 Slide</p>
+
+						<p class="text-bar">
+							0/8 Pasangan
+						</p>
+
 						<div class="bar">
 							<div class="barFill"></div>
 						</div>
-					</div>
-				</div>
 
+					</div>
+
+				</div>
 			</header>
 
 			<section id="main">
 
 				<div class="dialogContainer">
+
 					<div class="icon"></div>
+
 					<div class="dialog">
 						<p>
-							Tekan dua kad untuk mencari pasangan yang sama
+							Tekan dua kad untuk mencari
+							pasangan yang sama.
 						</p>
 					</div>
+
 				</div>
 
 				<div class="contentContainer">
 
 					<div class="output">
-						<div class="memory-container grid-4">
 
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
+						<!-- Kad dijana daripada JSON -->
+						<div class="memory-container grid-4"></div>
 
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-							<div class="card ">
-								<div class="innerCard">
-									<div class="back">
-										<h3>10</h3>
-									</div>
-									<div class="front">
-										<h1>📗</h1>
-									</div>
-								</div>
-							</div>
-
-							
-						</div>
 					</div>
 
 				</div>
@@ -217,76 +69,166 @@
 			</section>
 
 			<footer>
+
 				<div class="textContainer textBetul">
 					<h2 class="hidden"></h2>
 					<p class="hidden"></p>
 				</div>
+
 				<div class="btnContainer">
-					<button class="btnContinue soft-box hidden">CONTINUE</button>
-					<button class="btnCheck soft-box hidden">CHECK</button>
+
+					<button type="button" class="btnContinue soft-box hidden">
+						MAIN SEMULA
+					</button>
+
+					<button type="button" class="btnCheck soft-box hidden">
+						CHECK
+					</button>
+
 				</div>
+
 			</footer>
+
 		</main>
 	</div>
 
 	<script type="module">
-		// =====================================
-		// DATA PASANGAN
-		// =====================================
 
-		const pairData = [
+		const json = [
 			{
-				pairId: 1,
-				values: ["1 + 1", "2"]
-			},
-			{
-				pairId: 2,
-				values: ["1 + 2", "3"]
-			},
-			{
-				pairId: 3,
-				values: ["1 + 3", "4"]
-			},
-			{
-				pairId: 4,
-				values: ["2 + 3", "5"]
-			},
-			{
-				pairId: 5,
-				values: ["2 + 4", "6"]
-			},
-			{
-				pairId: 6,
-				values: ["3 + 4", "7"]
-			},
-			{
-				pairId: 7,
-				values: ["3 + 5", "8"]
-			},
-			{
-				pairId: 8,
-				values: ["4 + 5", "9"]
+				id: "memory-game-1",
+
+				text:
+					"Tekan dua kad untuk mencari pasangan operasi dan jawapan.",
+
+				type: "MemoryGame",
+
+				content: {
+					cardIcon: "📗",
+
+					items: [
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "1 + 1"
+							},
+
+							answer: 2
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "1 + 2"
+							},
+
+							answer: 3
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "1 + 3"
+							},
+
+							answer: 4
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "2 + 3"
+							},
+
+							answer: 5
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "2 + 4"
+							},
+
+							answer: 6
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "3 + 4"
+							},
+
+							answer: 7
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "3 + 5"
+							},
+
+							answer: 8
+						},
+						{
+							text:
+								"Cari pasangan yang sama",
+
+							type: "MemoryGame",
+
+							content: {
+								question: "4 + 5"
+							},
+
+							answer: 9
+						}
+					]
+				}
 			}
 		];
 
-		// =====================================
-		// STATE
-		// =====================================
+		const currentData = json[0];
+
+		const items =
+			currentData.content.items;
+
+		const totalPairs =
+			items.length;
 
 		const state = {
 			firstCard: null,
 			secondCard: null,
 
 			isLocked: false,
+
 			matchedPairs: 0,
 			attempts: 0,
 
-			phase: "playing"
-		};
+			phase: "playing",
 
-		// =====================================
-		// UI
-		// =====================================
+			timeoutId: null
+		};
 
 		const ui = {
 			memoryContainer:
@@ -295,37 +237,50 @@
 				),
 
 			dialog:
-				document.querySelector(".dialog p"),
+				document.querySelector(
+					".dialog p"
+				),
 
 			textBar:
-				document.querySelector(".text-bar"),
+				document.querySelector(
+					".text-bar"
+				),
 
 			barFill:
-				document.querySelector(".barFill"),
+				document.querySelector(
+					".barFill"
+				),
 
 			btnContinue:
-				document.querySelector(".btnContinue"),
+				document.querySelector(
+					".btnContinue"
+				),
 
 			btnCheck:
-				document.querySelector(".btnCheck")
+				document.querySelector(
+					".btnCheck"
+				)
 		};
 
-		const totalPairs = pairData.length;
-
-		// CHECK tidak diperlukan untuk memory game.
 		ui.btnCheck.classList.add("hidden");
 
+
 		// =====================================
-		// SHUFFLE
+		// 5. SHUFFLE
 		// =====================================
 
 		function shuffle(data) {
 			const result = [...data];
 
-			for (let i = result.length - 1; i > 0; i--) {
-				const randomIndex = Math.floor(
-					Math.random() * (i + 1)
-				);
+			for (
+				let i = result.length - 1;
+				i > 0;
+				i--
+			) {
+				const randomIndex =
+					Math.floor(
+						Math.random() * (i + 1)
+					);
 
 				[
 					result[i],
@@ -339,60 +294,85 @@
 			return result;
 		}
 
+
 		// =====================================
-		// BINA DECK
+		// 6. BINA DECK DARIPADA JSON
 		// =====================================
 
 		function createDeck() {
-			const deck = pairData.flatMap(pair => {
-				return pair.values.map(
-					(value, cardIndex) => {
-						return {
-							cardId:
-								`${pair.pairId}-${cardIndex}`,
+			const deck = items.flatMap(
+				(item, index) => {
+					const pairId =
+						`pair-${index}`;
 
-							pairId: pair.pairId,
-							value
-						};
-					}
-				);
-			});
+					return [
+						{
+							cardId:
+								`${pairId}-question`,
+
+							pairId,
+
+							value:
+								item.content.question
+						},
+
+						{
+							cardId:
+								`${pairId}-answer`,
+
+							pairId,
+
+							value:
+								item.answer
+						}
+					];
+				}
+			);
 
 			return shuffle(deck);
 		}
 
+
 		// =====================================
-		// RENDER KAD
+		// 7. RENDER KAD
 		// =====================================
 
 		function renderCards() {
 			const deck = createDeck();
 
-			ui.memoryContainer.innerHTML = deck
-				.map(card => {
-					return `
-						<div
-							class="card"
-							data-card-id="${card.cardId}"
-							data-pair-id="${card.pairId}"
-						>
-							<div class="innerCard">
-								<div class="back">
-									<h3>${card.value}</h3>
-								</div>
-	
-								<div class="front">
-									<h1>📗</h1>
-								</div>
+			const cardIcon =
+				currentData.content.cardIcon ??
+				"📗";
+
+			ui.memoryContainer.innerHTML =
+				deck.map(card => `
+					<div
+						class="card"
+						data-card-id="${card.cardId}"
+						data-pair-id="${card.pairId}"
+					>
+						<div class="innerCard">
+
+							<div class="back">
+								<h3>
+									${card.value}
+								</h3>
 							</div>
+
+							<div class="front">
+								<h1>
+									${cardIcon}
+								</h1>
+							</div>
+
 						</div>
-					`;
-				})
-				.join("");
+					</div>
+				`).join("");
 		}
 
+
 		// =====================================
-		// FLIP KAD
+		// 8. FLIP KAD
 		// =====================================
 
 		function flipCard(card) {
@@ -401,44 +381,95 @@
 				"flipped"
 			);
 
-			card
-				.querySelector(".innerCard")
-				.style.transform =
+			const innerCard =
+				card.querySelector(
+					".innerCard"
+				);
+
+			innerCard.style.transform =
 				"rotateY(180deg)";
 		}
 
 		function unflipCard(card) {
+			if (!card) return;
+
 			card.classList.remove(
 				"flip",
 				"flipped"
 			);
 
-			card
-				.querySelector(".innerCard")
-				.style.transform =
+			const innerCard =
+				card.querySelector(
+					".innerCard"
+				);
+
+			innerCard.style.transform =
 				"rotateY(0deg)";
 		}
 
+
 		// =====================================
-		// STATUS PERMAINAN
+		// 9. UPDATE PROGRESS
 		// =====================================
 
 		function updateProgress() {
 			ui.textBar.textContent =
-				`${state.matchedPairs}/${totalPairs} Pasangan | ${state.attempts} Percubaan`;
+				`${state.matchedPairs}/` +
+				`${totalPairs} Pasangan | ` +
+				`${state.attempts} Percubaan`;
 
 			const progress =
-				(
-					state.matchedPairs /
-					totalPairs
-				) * 100;
+				totalPairs === 0
+					? 0
+					: (
+						state.matchedPairs /
+						totalPairs
+					) * 100;
 
 			ui.barFill.style.width =
 				`${progress}%`;
 		}
 
+
 		// =====================================
-		// RESET PILIHAN
+		// 10. MESEJ
+		// =====================================
+
+		function showMessage(
+			message,
+			status = "normal"
+		) {
+			ui.dialog.textContent = message;
+
+			ui.dialog.classList.remove(
+				"textBetul",
+				"textSalah"
+			);
+
+			ui.dialog.style.color = "";
+
+			if (status === "correct") {
+				ui.dialog.classList.add(
+					"textBetul"
+				);
+
+				ui.dialog.style.color =
+					"#22a000";
+			}
+
+			if (status === "wrong") {
+				ui.dialog.classList.add(
+					"textSalah"
+				);
+
+				ui.dialog.style.color =
+					"#e53935";
+			}
+		}
+
+
+		// =====================================
+		// 11. RESET TURN
 		// =====================================
 
 		function resetTurn() {
@@ -447,127 +478,158 @@
 			state.isLocked = false;
 		}
 
+
 		// =====================================
-		// PASANGAN BETUL
+		// 12. PASANGAN BETUL
 		// =====================================
 
-		function handleCorrectPair() {
+		function handleCorrectPair(
+			firstCard,
+			secondCard
+		) {
 			state.matchedPairs++;
 
-			state.firstCard.classList.add(
+			firstCard.classList.add(
 				"matched"
 			);
 
-			state.secondCard.classList.add(
+			secondCard.classList.add(
 				"matched"
 			);
 
-			state.firstCard.style.pointerEvents =
+			firstCard.style.pointerEvents =
 				"none";
 
-			state.secondCard.style.pointerEvents =
+			secondCard.style.pointerEvents =
 				"none";
 
-			ui.dialog.textContent =
-				"Betul! Pasangan yang sama ditemui.";
-
-			ui.dialog.style.color = "#22a000";
+			showMessage(
+				"Betul! Pasangan yang sama ditemui.",
+				"correct"
+			);
 
 			updateProgress();
 			resetTurn();
 
 			if (
-				state.matchedPairs === totalPairs
+				state.matchedPairs ===
+				totalPairs
 			) {
 				finishGame();
 			}
 		}
 
+
 		// =====================================
-		// PASANGAN SALAH
+		// 13. PASANGAN SALAH
 		// =====================================
 
-		function handleWrongPair() {
-			ui.dialog.textContent =
-				"Bukan pasangan yang sama. Cuba lagi!";
+		function handleWrongPair(
+			firstCard,
+			secondCard
+		) {
+			showMessage(
+				"Bukan pasangan yang sama. Cuba lagi!",
+				"wrong"
+			);
 
-			ui.dialog.style.color = "#e53935";
+			state.timeoutId =
+				setTimeout(() => {
+					unflipCard(firstCard);
+					unflipCard(secondCard);
 
-			setTimeout(() => {
-				unflipCard(state.firstCard);
-				unflipCard(state.secondCard);
+					resetTurn();
 
-				resetTurn();
-
-				ui.dialog.textContent =
-					"Tekan dua kad untuk mencari pasangan yang sama.";
-
-				ui.dialog.style.color = "";
-			}, 800);
+					showMessage(
+						currentData.text
+					);
+				}, 800);
 		}
 
+
 		// =====================================
-		// SEMAK DUA KAD
+		// 14. SEMAK DUA KAD
 		// =====================================
 
 		function checkCards() {
 			state.attempts++;
 			state.isLocked = true;
 
+			const firstCard =
+				state.firstCard;
+
+			const secondCard =
+				state.secondCard;
+
 			const firstPairId =
-				state.firstCard.dataset.pairId;
+				firstCard.dataset.pairId;
 
 			const secondPairId =
-				state.secondCard.dataset.pairId;
+				secondCard.dataset.pairId;
 
 			const isSamePair =
 				firstPairId === secondPairId;
 
+			updateProgress();
+
 			if (isSamePair) {
-				setTimeout(() => {
-					handleCorrectPair();
-				}, 400);
-			} else {
-				handleWrongPair();
+				state.timeoutId =
+					setTimeout(() => {
+						handleCorrectPair(
+							firstCard,
+							secondCard
+						);
+					}, 400);
+
+				return;
 			}
 
-			updateProgress();
+			handleWrongPair(
+				firstCard,
+				secondCard
+			);
 		}
 
+
 		// =====================================
-		// KLIK KAD
+		// 15. KLIK KAD
 		// =====================================
 
 		function handleCardClick(event) {
 			const card =
 				event.target.closest(".card");
 
-			if (!card) return;
-
-			if (state.phase !== "playing") {
+			if (
+				!card ||
+				!ui.memoryContainer.contains(card)
+			) {
 				return;
 			}
 
-			if (state.isLocked) {
+			if (
+				state.phase !== "playing" ||
+				state.isLocked
+			) {
 				return;
 			}
 
 			if (
 				card === state.firstCard ||
-				card.classList.contains("matched")
+				card.classList.contains(
+					"matched"
+				)
 			) {
 				return;
 			}
 
 			flipCard(card);
 
-			if (state.firstCard === null) {
+			if (!state.firstCard) {
 				state.firstCard = card;
 
-				ui.dialog.textContent =
-					"Pilih satu lagi kad.";
-
-				ui.dialog.style.color = "";
+				showMessage(
+					"Pilih satu lagi kad."
+				);
 
 				return;
 			}
@@ -577,23 +639,28 @@
 			checkCards();
 		}
 
+
 		// =====================================
-		// TAMAT PERMAINAN
+		// 16. TAMAT GAME
 		// =====================================
 
 		function finishGame() {
 			state.phase = "complete";
 			state.isLocked = true;
 
-			ui.barFill.style.width = "100%";
+			ui.barFill.style.width =
+				"100%";
 
 			ui.textBar.textContent =
-				`${totalPairs}/${totalPairs} Pasangan`;
+				`${totalPairs}/${totalPairs} ` +
+				`Pasangan`;
 
-			ui.dialog.textContent =
-				`Tahniah! Semua pasangan ditemui dalam ${state.attempts} percubaan.`;
-
-			ui.dialog.style.color = "#22a000";
+			showMessage(
+				`Tahniah! Semua pasangan ` +
+				`ditemui dalam ` +
+				`${state.attempts} percubaan.`,
+				"correct"
+			);
 
 			ui.btnContinue.textContent =
 				"MAIN SEMULA";
@@ -603,24 +670,25 @@
 			);
 		}
 
+
 		// =====================================
-		// MULA / RESTART GAME
+		// 17. MULA / RESTART
 		// =====================================
 
 		function startGame() {
+			clearTimeout(state.timeoutId);
+
 			state.firstCard = null;
 			state.secondCard = null;
 
 			state.isLocked = false;
+
 			state.matchedPairs = 0;
 			state.attempts = 0;
 
 			state.phase = "playing";
 
-			ui.dialog.textContent =
-				"Tekan dua kad untuk mencari pasangan operasi dan jawapan.";
-
-			ui.dialog.style.color = "";
+			showMessage(currentData.text);
 
 			ui.btnContinue.classList.add(
 				"hidden"
@@ -630,8 +698,9 @@
 			updateProgress();
 		}
 
+
 		// =====================================
-		// EVENT LISTENER
+		// 18. EVENT LISTENER
 		// =====================================
 
 		ui.memoryContainer.addEventListener(
@@ -644,11 +713,13 @@
 			startGame
 		);
 
+
 		// =====================================
-		// MULA GAME
+		// 19. MULA GAME
 		// =====================================
 
 		startGame();
+
 	</script>
 
 </body>

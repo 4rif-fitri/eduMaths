@@ -3,53 +3,10 @@
 
 <head>
 	<meta charset="UTF-8">
-
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 	<title>Game Padankan</title>
-
 	<link rel="stylesheet" href="../../src/style/lesson.css">
-
 	<link rel="stylesheet" href="../../src/style/game.css">
-
-	<style>
-		.boxSoalan,
-		.boxJawapan {
-			cursor: pointer;
-
-			transition:
-				transform 0.2s,
-				background-color 0.2s,
-				border-color 0.2s;
-		}
-
-		.boxSoalan:hover,
-		.boxJawapan:hover {
-			transform: translateY(-3px);
-		}
-
-		.boxSoalan.selected,
-		.boxJawapan.selected {
-			color: #0b2f68;
-			background-color: #dbeafe;
-			border: 4px solid #3b82f6;
-		}
-
-		.boxSoalan.wrong,
-		.boxJawapan.wrong {
-			color: #991b1b;
-			background-color: #fee2e2;
-			border-color: #ef4444;
-		}
-
-		.boxSoalan.matched,
-		.boxJawapan.matched {
-			color: #166534;
-			background-color: #dcfce7;
-			border-color: #22c55e;
-			opacity: 0.7;
-		}
-	</style>
 </head>
 
 <body>
@@ -114,79 +71,52 @@
 	</div>
 
 	<script type="module">
-
 		import {
 			widgetRegistry
 		} from "../../src/js/utils/widgetRegistry.js";
 
-
-		// =====================================
-		// 1. ARRAY COMPONENT
-		// =====================================
-
 		const json = [
 			{
 				id: "padankan-set-1",
-
-				text:
-					"Padankan soalan dengan jawapan yang betul",
-
+				text: "Padankan soalan dengan jawapan yang betul",
 				type: "padankan",
-
 				content: {
 					items: [
 						{
 							text: "Padankan yang betul",
-
 							type: "padankan",
-
 							content: {
 								question: "1 + 1"
 							},
-
 							answer: 2
 						},
 						{
 							text: "Padankan yang betul",
-
 							type: "padankan",
-
 							content: {
 								question: "1 + 2"
 							},
-
 							answer: 3
 						},
 						{
 							text: "Padankan yang betul",
-
 							type: "padankan",
-
 							content: {
 								question: "1 + 3"
 							},
-
 							answer: 4
 						},
 						{
 							text: "Padankan yang betul",
-
 							type: "padankan",
-
 							content: {
 								question: "2 + 3"
 							},
-
 							answer: 5
 						}
 					]
 				}
 			},
-
-			/*
-				Selepas component pertama selesai,
-				index akan bergerak ke component ini.
-			*/
 
 			{
 				id: "padankan-set-2",
@@ -255,76 +185,29 @@
 		};
 
 		const ui = {
-			contentContainer:
-				document.querySelector(
-					".contentContainer"
-				),
-
-			dialog:
-				document.querySelector(
-					".dialog p"
-				),
-
-			textBar:
-				document.querySelector(
-					".text-bar"
-				),
-
-			barFill:
-				document.querySelector(
-					".barFill"
-				),
-
-			btnCheck:
-				document.querySelector(
-					".btnCheck"
-				),
-
-			btnContinue:
-				document.querySelector(
-					".btnContinue"
-				)
+			contentContainer:document.querySelector(".contentContainer"),
+			dialog:document.querySelector(".dialog p"),
+			textBar:document.querySelector(".text-bar"),
+			barFill:document.querySelector(".barFill"),
+			btnCheck:document.querySelector(".btnCheck"),
+			btnContinue:document.querySelector(".btnContinue")
 		};
 
-
-		// =====================================
-		// 4. PAPARKAN MESEJ
-		// =====================================
-
-		function showMessage(
-			message,
-			status = "normal"
-		) {
+		function showMessage(message,	status = "normal") {
 			ui.dialog.textContent = message;
 
-			ui.dialog.classList.remove(
-				"textBetul",
-				"textSalah"
-			);
+			ui.dialog.classList.remove("textBetul","textSalah");
 
 			if (status === "correct") {
-				ui.dialog.classList.add(
-					"textBetul"
-				);
+				ui.dialog.classList.add("textBetul");
 			}
 
 			if (status === "wrong") {
-				ui.dialog.classList.add(
-					"textSalah"
-				);
+				ui.dialog.classList.add("textSalah");
 			}
 		}
 
-
-		// =====================================
-		// 5. PROGRESS DALAMAN COMPONENT
-		// =====================================
-
-		function updateSubProgress(
-			completed,
-			total,
-			attempts
-		) {
+		function updateSubProgress(completed,total,attempts) {
 			const percentage =
 				total === 0
 					? 0
@@ -338,17 +221,7 @@
 				`${percentage}%`;
 		}
 
-
-		// =====================================
-		// 6. RENDER COMPONENT SEMASA
-		// =====================================
-
 		function renderCurrentComponent() {
-			/*
-				Bersihkan event listener daripada
-				component sebelumnya.
-			*/
-
 			state.cleanup?.();
 
 			state.cleanup = null;
@@ -362,22 +235,6 @@
 			}
 
 			let component = widgetRegistry[currentData.type];
-
-			if (!component) {
-				console.error(
-					`Component "${currentData.type}" ` +
-					`tidak dijumpai.`
-				);
-				return;
-			}
-
-			if (!component.mount) {
-				console.error(
-					`Component "${currentData.type}" ` +
-					`tiada fungsi mount().`
-				);
-				return;
-			}
 
 			state.phase = "playing";
 
@@ -401,49 +258,25 @@
 			});
 		}
 
-
-		// =====================================
-		// 7. COMPONENT SUDAH SIAP
-		// =====================================
-
 		function handleComponentComplete(result) {
-			/*
-				Elakkan complete dipanggil
-				lebih daripada sekali.
-			*/
-
-			if (state.phase !== "playing") {
-				return;
-			}
+			if (state.phase !== "playing") return
 
 			state.phase = "component-complete";
 			state.currentResult = result;
 
-			const isLastComponent =
-				state.index === json.length - 1;
+			const isLastComponent = state.index === json.length - 1;
 
 			ui.btnContinue.textContent =
 				isLastComponent
 					? "FINISH"
 					: "CONTINUE";
 
-			ui.btnContinue.classList.remove(
-				"hidden"
-			);
+			ui.btnContinue.classList.remove("hidden");
 		}
 
 
-		// =====================================
-		// 8. PERGI COMPONENT SETERUSNYA
-		// =====================================
-
 		function handleContinue() {
-			if (
-				state.phase !==
-				"component-complete"
-			) {
-				return;
-			}
+			if (state.phase !== "component-complete") return
 
 			state.index++;
 
@@ -451,17 +284,13 @@
 		}
 
 
-		// =====================================
-		// 9. SEMUA COMPONENT SELESAI
-		// =====================================
-
 		function finishAllComponents() {
 			state.cleanup?.();
 
 			state.cleanup = null;
 			state.phase = "complete";
 
-			showMessage("Semua aktiviti telah selesai!","correct");
+			showMessage("Semua aktiviti telah selesai!", "correct");
 
 			ui.contentContainer.innerHTML = `
 				<div class="output">
@@ -476,37 +305,15 @@
 				</div>
 			`;
 
-			ui.textBar.textContent =
-				`${json.length}/${json.length} Aktiviti`;
-
+			ui.textBar.textContent = `${json.length}/${json.length} Aktiviti`;
 			ui.barFill.style.width = "100%";
-
 			ui.btnCheck.classList.add("hidden");
 			ui.btnContinue.classList.add("hidden");
-
-			localStorage.setItem(
-				"game8Completed",
-				"true"
-			);
 		}
 
-
-		// =====================================
-		// 10. EVENT
-		// =====================================
-
-		ui.btnContinue.addEventListener(
-			"click",
-			handleContinue
-		);
-
-
-		// =====================================
-		// 11. MULA
-		// =====================================
+		ui.btnContinue.addEventListener("click", handleContinue);
 
 		renderCurrentComponent();
-
 	</script>
 
 </body>
